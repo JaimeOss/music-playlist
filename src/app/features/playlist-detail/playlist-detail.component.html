@@ -1,0 +1,155 @@
+@if (playlist) {
+  <div class="min-h-dvh bg-[#0f0f0f] pb-28 text-white">
+    <!-- Header -->
+    <header
+      class="sticky top-0 z-10 flex items-center justify-between border-b border-zinc-800 bg-[#0f0f0f]/95 px-4 py-4 backdrop-blur sm:px-6"
+    >
+      <div class="flex items-center gap-3">
+        <p-avatar [label]="userInitials" shape="circle" styleClass="detail-avatar" />
+        <span class="hidden text-sm text-zinc-300 sm:inline">{{ currentUserName }}</span>
+      </div>
+
+      <div class="relative flex items-center">
+        <p-button
+          type="button"
+          icon="pi pi-ellipsis-v"
+          [rounded]="true"
+          [text]="true"
+          severity="secondary"
+          styleClass="detail-menu-trigger"
+          ariaLabel="Menú de usuario"
+          (onClick)="openUserMenu($event)"
+        />
+        <p-menu #userMenu [model]="menuItems" [popup]="true" appendTo="body" />
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+      <!-- Volver -->
+      <p-button
+        type="button"
+        icon="pi pi-arrow-left"
+        label="Volver"
+        [text]="true"
+        severity="secondary"
+        styleClass="detail-back-btn mb-6"
+        (onClick)="goBack()"
+      />
+
+      <!-- Info playlist -->
+      <section class="mb-8 flex flex-col gap-6 sm:flex-row sm:items-end">
+        <img
+          [src]="playlist.cover"
+          [alt]="playlist.name"
+          class="h-48 w-48 shrink-0 rounded-xl bg-zinc-800 object-cover shadow-lg shadow-blue-950/20 sm:h-56 sm:w-56"
+        />
+        <div class="min-w-0">
+          <p class="mb-2 text-xs font-medium uppercase tracking-wider text-blue-400">
+            Playlist
+          </p>
+          <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{{ playlist.name }}</h1>
+          <p class="mt-2 text-sm text-zinc-400">{{ playlistMetaLabel }}</p>
+        </div>
+      </section>
+
+      <!-- Acciones -->
+      <div class="mb-6 flex items-center gap-5">
+        <h2 class="text-lg font-semibold">Listado de canciones</h2>
+        <p-button
+          type="button"
+          icon="pi pi-plus"
+          [rounded]="true"
+          styleClass="detail-action-btn"
+          ariaLabel="Agregar canción"
+          (onClick)="openSearchDialog()"
+        />
+      </div>
+
+      <!-- Canciones -->
+      @if (playlist.songs.length === 0) {
+        <div
+          class="rounded-2xl border border-dashed border-zinc-700 py-12 text-center text-zinc-400"
+        >
+          Esta playlist aún no tiene canciones.
+        </div>
+      } @else {
+        <div
+          cdkDropList
+          class="song-drop-list rounded-xl border border-zinc-800 bg-zinc-900/30"
+          (cdkDropListDropped)="onSongDrop($event)"
+        >
+          @for (song of playlist.songs; track song.id) {
+            <div cdkDrag class="song-drag-item">
+              <app-song-item
+                [song]="song"
+                [reorderable]="true"
+                [isSelected]="isSongSelected(song.id)"
+                [isPlaying]="isSongPlaying(song.id)"
+                (onPlay)="onPlaySong($event)"
+                (onDelete)="removeSong($event)"
+              />
+            </div>
+          }
+        </div>
+      }
+    </main>
+
+    <app-audio-player
+      [song]="currentSong"
+      (playingChange)="onPlayingChange($event)"
+    />
+  </div>
+}
+
+<p-dialog
+  header="Buscar canciones"
+  [(visible)]="searchDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [style]="{ width: '32rem' }"
+  styleClass="detail-dialog"
+>
+  <div class="flex flex-col gap-4 pt-2">
+    <input
+      pInputText
+      [formControl]="searchControl"
+      placeholder="Buscar en iTunes..."
+      class="detail-dialog-input w-full"
+    />
+
+    @if (isSearching) {
+      <div class="flex justify-center py-6">
+        <p-progressSpinner strokeWidth="4" styleClass="h-8 w-8" />
+      </div>
+    }
+
+    @if (searchError) {
+      <p class="text-sm text-red-400">No se pudo buscar canciones. Intenta de nuevo.</p>
+    }
+
+    @if (!isSearching && searchControl.value.trim().length >= 2 && searchResults.length === 0 && !searchError) {
+      <p class="py-4 text-center text-sm text-zinc-400">No se encontraron resultados con preview.</p>
+    }
+
+    <div class="max-h-80 space-y-2 overflow-y-auto">
+      @for (result of searchResults; track result.id) {
+        <button
+          type="button"
+          (click)="addSong(result)"
+          class="flex w-full items-center gap-3 rounded-lg p-2 text-left transition hover:bg-zinc-800"
+        >
+          <img
+            [src]="result.cover"
+            [alt]="result.title"
+            class="h-12 w-12 shrink-0 rounded-md bg-zinc-800 object-cover"
+          />
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-medium text-white">{{ result.title }}</p>
+            <p class="truncate text-xs text-zinc-400">{{ result.artist }}</p>
+          </div>
+          <span class="text-xs text-zinc-500">{{ formatDuration(result.duration) }}</span>
+        </button>
+      }
+    </div>
+  </div>
+</p-dialog>

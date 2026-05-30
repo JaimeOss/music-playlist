@@ -1,0 +1,114 @@
+<div class="min-h-dvh bg-[#0f0f0f] text-white">
+  <!-- Header -->
+  <header
+    class="sticky top-0 z-10 flex items-center justify-between border-b border-zinc-800 bg-[#0f0f0f]/95 px-4 py-4 backdrop-blur sm:px-6"
+  >
+    <div class="flex items-center gap-3">
+      <p-avatar [label]="userInitials" shape="circle" styleClass="home-avatar" />
+      <span class="hidden text-sm text-zinc-300 sm:inline">{{ currentUserName }}</span>
+    </div>
+
+    <div class="relative flex items-center">
+      <p-button
+        type="button"
+        icon="pi pi-ellipsis-v"
+        [rounded]="true"
+        [text]="true"
+        severity="secondary"
+        styleClass="home-menu-trigger"
+        ariaLabel="Menú de usuario"
+        (onClick)="openUserMenu($event)"
+      />
+      <p-menu #userMenu [model]="menuItems" [popup]="true" appendTo="body" />
+    </div>
+  </header>
+
+  <!-- Contenido -->
+  <main class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+    <div class="mb-8 flex items-center justify-between gap-4">
+      <h1 class="text-2xl font-semibold tracking-tight">Listas de reproducción</h1>
+      <p-button
+        type="button"
+        icon="pi pi-plus"
+        label="Nueva lista"
+        styleClass="home-create-btn"
+        (onClick)="openCreateDialog()"
+      />
+    </div>
+
+    @if (playlists.length === 0) {
+      <div class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-700 py-16 text-center">
+        <p class="mb-4 text-zinc-400">No tienes playlists aún</p>
+        <p-button
+          type="button"
+          icon="pi pi-plus"
+          label="Crear playlist"
+          styleClass="home-create-btn"
+          (onClick)="openCreateDialog()"
+        />
+      </div>
+    } @else {
+      <div
+        cdkDropList
+        cdkDropListOrientation="mixed"
+        class="playlist-drop-list grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"
+        (cdkDropListDropped)="onPlaylistDrop($event)"
+      >
+        @for (playlist of playlists; track playlist.id) {
+          <div
+            cdkDrag
+            class="group/card playlist-drag-item cursor-grab rounded-xl active:cursor-grabbing"
+            (cdkDragStarted)="onDragStarted()"
+            (click)="onPlaylistClick(playlist.id)"
+          >
+            <app-playlist-card [playlist]="playlist" />
+          </div>
+        }
+      </div>    }
+  </main>
+</div>
+
+<p-dialog
+  header="Nueva playlist"
+  [(visible)]="createDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [style]="{ width: '24rem' }"
+  styleClass="home-dialog"
+>
+  <form [formGroup]="createForm" (ngSubmit)="createPlaylist()" class="flex flex-col gap-4 pt-2">
+    <div class="flex flex-col gap-2">
+      <label for="playlistName" class="text-sm font-medium text-zinc-300">Nombre</label>
+      <input
+        pInputText
+        id="playlistName"
+        formControlName="name"
+        placeholder="Mi playlist favorita"
+        class="home-dialog-input w-full"
+        [invalid]="createForm.get('name')?.invalid && createForm.get('name')?.touched"
+      />
+      @if (createForm.get('name')?.touched && createForm.get('name')?.errors?.['required']) {
+        <p class="text-sm text-red-400">El nombre es obligatorio</p>
+      }
+      @if (createForm.get('name')?.touched && createForm.get('name')?.errors?.['minlength']) {
+        <p class="text-sm text-red-400">Mínimo 2 caracteres</p>
+      }
+    </div>
+
+    <div class="flex justify-end gap-2">
+      <p-button
+        type="button"
+        label="Cancelar"
+        severity="secondary"
+        [text]="true"
+        (onClick)="createDialogVisible = false"
+      />
+      <p-button
+        type="submit"
+        label="Crear"
+        styleClass="home-create-btn"
+        [disabled]="createForm.invalid"
+      />
+    </div>
+  </form>
+</p-dialog>

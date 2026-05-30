@@ -1,0 +1,9 @@
+:host ::ng-deep .player-btn.p-button {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+:host ::ng-deep .player-btn.p-button:enabled:hover {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}

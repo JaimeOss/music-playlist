@@ -1,0 +1,13 @@
+<div
+  class="pointer-events-none w-full rounded-xl bg-zinc-900/40 p-3 text-left transition duration-200 group-hover/card:-translate-y-1 group-hover/card:bg-zinc-800/60 group-hover/card:shadow-lg group-hover/card:shadow-blue-950/30"
+>
+  <div class="mb-3 aspect-square overflow-hidden rounded-lg bg-zinc-800">
+    <img
+      [src]="playlist.cover"
+      [alt]="playlist.name"
+      class="h-full w-full object-cover transition duration-200 group-hover/card:scale-105"
+    />
+  </div>
+  <h3 class="truncate text-sm font-semibold text-white">{{ playlist.name }}</h3>
+  <p class="mt-1 text-xs text-zinc-400">{{ playlistMetaLabel }}</p>
+</div>

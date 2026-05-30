@@ -1,0 +1,56 @@
+<div
+  role="button"
+  tabindex="0"
+  (click)="handleRowClick()"
+  (keydown.enter)="handleRowClick()"
+  class="flex cursor-pointer items-center gap-3 border-b border-zinc-800/80 px-2 py-3 transition hover:bg-zinc-900/60"
+  [class.bg-blue-950/25]="isSelected"
+  [class.border-l-2]="isSelected"
+  [class.border-l-blue-500]="isSelected"
+>
+  @if (reorderable) {
+    <button
+      type="button"
+      cdkDragHandle
+      class="flex h-10 w-8 shrink-0 cursor-grab items-center justify-center rounded-md text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-300 active:cursor-grabbing"
+      aria-label="Reordenar canción"
+      (click)="stopDragClick($event)"
+    >
+      <i class="pi pi-bars text-sm"></i>
+    </button>
+  }
+
+  <img
+    [src]="song.cover"
+    [alt]="song.title"
+    class="h-12 w-12 shrink-0 rounded-md bg-zinc-800 object-cover"
+  />
+
+  <div class="min-w-0 flex-1">
+    <p class="truncate text-sm font-medium text-white">{{ song.title }}</p>
+    <p class="truncate text-xs text-zinc-400">{{ song.artist }}</p>
+  </div>
+
+  <span class="hidden text-xs text-zinc-500 sm:inline">{{ durationLabel }}</span>
+
+  <p-button
+    type="button"
+    [icon]="playIcon"
+    [rounded]="true"
+    [text]="true"
+    severity="secondary"
+    ariaLabel="Reproducir canción"
+    (onClick)="handlePlay($event)"
+  />
+
+  <p-button
+    type="button"
+    icon="pi pi-ellipsis-v"
+    [rounded]="true"
+    [text]="true"
+    severity="secondary"
+    ariaLabel="Opciones de canción"
+    (onClick)="openMenu($event)"
+  />
+  <p-menu #songMenu [model]="menuItems" [popup]="true" />
+</div>

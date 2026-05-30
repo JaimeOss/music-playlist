@@ -1,0 +1,81 @@
+<div class="flex min-h-dvh flex-col lg:flex-row">
+  <!-- Panel izquierdo: coloca tu imagen en public/images/login-bg.jpg -->
+  <aside
+    class="login-hero relative hidden min-h-[12rem] lg:block lg:min-h-dvh lg:w-2/3"
+    aria-hidden="true"
+  ></aside>
+
+  <!-- Panel derecho: formulario -->
+  <main
+    class="flex flex-1 items-center justify-center bg-[#0f0f0f] px-6 py-10 lg:w-1/3 lg:px-10"
+  >
+    <div class="w-full max-w-sm">
+      <h1 class="mb-8 text-2xl font-semibold tracking-tight text-white">
+        Inicio de sesión
+      </h1>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
+        @if (authError) {
+          <p-message
+            severity="error"
+            text="Correo o contraseña incorrectos"
+            styleClass="w-full"
+          />
+        }
+
+        <div class="flex flex-col gap-2">
+          <label for="email" class="text-sm font-medium text-zinc-300">Correo</label>
+          <input
+            pInputText
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="usuario@musicapp.com"
+            autocomplete="email"
+            class="login-input w-full"
+            [invalid]="isInvalid('email')"
+          />
+          @if (getEmailError(); as error) {
+            <p class="text-sm text-red-400">{{ error }}</p>
+          }
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="password" class="text-sm font-medium text-zinc-300">Contraseña</label>
+          <input
+            pInputText
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="••••••"
+            autocomplete="current-password"
+            class="login-input w-full"
+            [invalid]="isInvalid('password')"
+          />
+          @if (getPasswordError(); as error) {
+            <p class="text-sm text-red-400">{{ error }}</p>
+          }
+        </div>
+
+        <p-button
+          type="submit"
+          label="Iniciar sesión"
+          styleClass="login-submit w-full"
+          [disabled]="form.invalid"
+        />
+      </form>
+
+      <div class="mt-8 rounded-lg border border-zinc-800 bg-zinc-900/60 p-4">
+        <p class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500">
+          Credenciales de prueba
+        </p>
+        <p class="text-sm text-zinc-400">
+          <span class="text-zinc-300">Correo:</span> usuario@musicapp.com
+        </p>
+        <p class="text-sm text-zinc-400">
+          <span class="text-zinc-300">Contraseña:</span> 123456
+        </p>
+      </div>
+    </div>
+  </main>
+</div>
