@@ -65,13 +65,15 @@ export class AudioPlayerComponent implements OnDestroy {
 
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly audio = new Audio();
+  private audioContext: AudioContext | null = null;
+  private gainNode: GainNode | null = null;
   private loadedSongId: string | null = null;
   private pendingCanPlayHandler: (() => void) | null = null;
   private playbackSession = 0;
 
   constructor() {
     this.loadVolume();
-    this.applyVolume();
+    this.setupVolumeControl();
   }
 
   ngOnDestroy(): void {
@@ -83,6 +85,7 @@ export class AudioPlayerComponent implements OnDestroy {
     this.audio.onended = null;
     this.audio.src = '';
     this.audio.load();
+    void this.audioContext?.close();
   }
 
   get playIcon(): string {
@@ -135,6 +138,8 @@ export class AudioPlayerComponent implements OnDestroy {
       return;
     }
 
+    void this.resumeAudioContext();
+
     if (targetSong) {
       this._song = targetSong;
       this.cdr.markForCheck();
@@ -152,6 +157,8 @@ export class AudioPlayerComponent implements OnDestroy {
     if (!this.song?.previewUrl) {
       return;
     }
+
+    void this.resumeAudioContext();
 
     if (this.loadedSongId !== this.song.id) {
       this.startSong(this.song);
@@ -204,6 +211,8 @@ export class AudioPlayerComponent implements OnDestroy {
     if (session !== this.playbackSession) {
       return;
     }
+
+    void this.resumeAudioContext();
 
     this.audio
       .play()
@@ -312,6 +321,7 @@ export class AudioPlayerComponent implements OnDestroy {
       this.volume = this.volumeBeforeMute > 0 ? this.volumeBeforeMute : DEFAULT_PLAYER_VOLUME;
     }
 
+    void this.resumeAudioContext();
     this.applyVolume();
     this.cdr.markForCheck();
   }
@@ -325,8 +335,48 @@ export class AudioPlayerComponent implements OnDestroy {
       this.volumeBeforeMute = this.volume;
     }
 
+    void this.resumeAudioContext();
     this.applyVolume();
     this.cdr.markForCheck();
+  }
+
+  private setupVolumeControl(): void {
+    if (typeof window === 'undefined') {
+      this.applyVolume();
+      return;
+    }
+
+    const AudioContextCtor =
+      window.AudioContext ??
+      (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+
+    if (!AudioContextCtor) {
+      this.applyVolume();
+      return;
+    }
+
+    try {
+      this.audioContext = new AudioContextCtor();
+      this.gainNode = this.audioContext.createGain();
+      const source = this.audioContext.createMediaElementSource(this.audio);
+      source.connect(this.gainNode);
+      this.gainNode.connect(this.audioContext.destination);
+    } catch {
+      this.audioContext = null;
+      this.gainNode = null;
+    }
+
+    this.applyVolume();
+  }
+
+  private async resumeAudioContext(): Promise<void> {
+    if (this.audioContext?.state === 'suspended') {
+      try {
+        await this.audioContext.resume();
+      } catch {
+        // iOS requiere un gesto del usuario para activar el contexto de audio.
+      }
+    }
   }
 
   private loadVolume(): void {
@@ -347,7 +397,13 @@ export class AudioPlayerComponent implements OnDestroy {
   }
 
   private applyVolume(): void {
-    this.audio.volume = this.volume;
+    if (this.gainNode) {
+      this.gainNode.gain.value = this.volume;
+    } else {
+      this.audio.volume = this.volume;
+    }
+
+    this.audio.muted = this.volume === 0;
     localStorage.setItem(PLAYER_VOLUME_STORAGE_KEY, String(this.volume));
   }
 

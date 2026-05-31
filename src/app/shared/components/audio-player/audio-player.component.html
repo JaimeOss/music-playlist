@@ -112,10 +112,12 @@
               class="volume-slider volume-slider--horizontal"
               min="0"
               max="100"
+              step="1"
               [value]="volumePercent"
               [style.--volume-percent]="volumePercent + '%'"
               aria-label="Volumen"
               (input)="onVolumeChange($event)"
+              (change)="onVolumeChange($event)"
             />
           </div>
         </div>
