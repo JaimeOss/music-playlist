@@ -149,24 +149,13 @@ body {
   border-color: #b91c1c;
 }
 
-/* Labels en una sola línea; si no cabe, solo icono (app-btn--collapse-label) */
+/* Labels de botones en una sola línea */
 .p-button .p-button-label {
   white-space: nowrap;
 }
 
-.p-button.app-btn--collapse-label:has(.p-button-icon) {
-  flex-shrink: 0;
-}
-
-.home__toolbar {
-  container: home-toolbar / inline-size;
-}
-
-.detail__actions {
-  container: detail-actions / inline-size;
-}
-
-@mixin btn-icon-only {
+/* Móvil: botones de agregar solo con icono */
+@mixin btn-add-icon-only-mobile {
   .p-button-label {
     display: none;
   }
@@ -183,21 +172,9 @@ body {
   justify-content: center;
 }
 
-@container home-toolbar (max-width: 26rem) {
-  .home-create-btn.app-btn--collapse-label.p-button:has(.p-button-icon) {
-    @include btn-icon-only;
-  }
-}
-
-@container detail-actions (max-width: 22rem) {
-  .detail-action-btn.app-btn--collapse-label.p-button:has(.p-button-icon) {
-    @include btn-icon-only;
-  }
-}
-
-@media (max-width: 480px) {
-  .detail-back-btn.app-btn--collapse-label.p-button:has(.p-button-icon),
-  .home__empty .home-create-btn.app-btn--collapse-label.p-button:has(.p-button-icon) {
-    @include btn-icon-only;
+@media (max-width: 639px) {
+  .home-create-btn.app-btn--add-mobile.p-button:has(.p-button-icon),
+  .detail-action-btn.app-btn--add-mobile.p-button:has(.p-button-icon) {
+    @include btn-add-icon-only-mobile;
   }
 }

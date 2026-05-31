@@ -1,8 +1,9 @@
-import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
+import { Component, effect, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { Button } from 'primeng/button';
 import { Menu } from 'primeng/menu';
 import { Ripple } from 'primeng/ripple';
+import { SearchSettingsService } from '../../../core/services/search-settings.service';
 import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
@@ -19,9 +20,11 @@ export class UserHeaderMenuComponent {
   @ViewChild('userMenu') userMenu!: Menu;
 
   readonly themeService = inject(ThemeService);
+  readonly searchSettings = inject(SearchSettingsService);
 
   readonly menuItems: MenuItem[] = [
     { id: 'theme' },
+    { id: 'itunes' },
     { separator: true },
     {
       label: 'Cerrar sesión',
@@ -38,5 +41,11 @@ export class UserHeaderMenuComponent {
     event.preventDefault();
     event.stopPropagation();
     this.themeService.toggle();
+  }
+
+  onItunesClick(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.searchSettings.toggleUseItunes();
   }
 }

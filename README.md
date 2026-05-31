@@ -23,7 +23,7 @@ Aplicación web para crear y administrar listas de reproducción de música. Des
 - Inicio y cierre de sesión con guards de ruta
 - Creación y eliminación de playlists
 - Detalle de playlist con listado de canciones
-- Agregar canciones desde la API de iTunes (título, artista, duración, preview)
+- Agregar canciones desde iTunes o desde un catálogo local de respaldo (20 canciones)
 - Eliminar canciones y reordenar por arrastre
 - Reproductor global con play/pausa, anterior/siguiente, shuffle y loop
 - Persistencia local (`localStorage` para playlists, `sessionStorage` para sesión)
@@ -83,7 +83,7 @@ src/app/
 
 ## Notas
 
-- La búsqueda de canciones usa la API de iTunes a través de un proxy en la misma URL (`/api/itunes/...`), compatible con móvil y Safari.
+- La búsqueda puede usar **iTunes** (activo por defecto) o un **catálogo local** de 20 canciones. En el menú del header (⋮) puedes desactivar «Usar iTunes». Si iTunes falla, se usa el catálogo local automáticamente.
 - Al refrescar la página en rutas internas (`/home`, `/playlist/...`), Netlify redirige a `index.html` gracie a la regla SPA del `netlify.toml`.
 
 ## Tecnologías

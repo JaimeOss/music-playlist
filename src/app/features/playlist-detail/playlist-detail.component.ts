@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ChangeDetectorRef, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, DestroyRef, ChangeDetectorRef, effect, inject, OnInit, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -18,10 +18,12 @@ import { InputText } from 'primeng/inputtext';
 import { Menu } from 'primeng/menu';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { AuthService } from '../../core/services/auth.service';
-import { ItunesService } from '../../core/services/itunes.service';
+import { SearchSettingsService } from '../../core/services/search-settings.service';
+import { SongSearchService } from '../../core/services/song-search.service';
 import { PlaybackService } from '../../core/services/playback.service';
 import { PlaylistService } from '../../core/services/playlist.service';
 import { Playlist } from '../../core/models/playlist.model';
+import { SongSearchSource } from '../../core/models/song-search.model';
 import { Song } from '../../core/models/song.model';
 import { formatDuration, formatTotalDuration } from '../../core/utils/format-duration.util';
 import { runAfterDeleteAnimation } from '../../core/constants/delete-animation.constants';
@@ -58,7 +60,8 @@ export class PlaylistDetailComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly playlistService = inject(PlaylistService);
   readonly playback = inject(PlaybackService);
-  private readonly itunesService = inject(ItunesService);
+  readonly searchSettings = inject(SearchSettingsService);
+  private readonly songSearchService = inject(SongSearchService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly fb = inject(FormBuilder);
@@ -77,6 +80,7 @@ export class PlaylistDetailComponent implements OnInit {
   isPlaylistDeleting = false;
   searchControl = new FormControl('', { nonNullable: true });
   searchResults: Song[] = [];
+  searchSource: SongSearchSource | null = null;
   isSearching = false;
   searchError = false;
 
@@ -97,42 +101,132 @@ export class PlaylistDetailComponent implements OnInit {
     },
   ];
 
+  constructor() {
+    effect(() => {
+      const useItunes = this.searchSettings.useItunes();
+
+      if (!this.searchDialogVisible) {
+        return;
+      }
+
+      const query = this.searchControl.value.trim();
+
+      if (!useItunes) {
+        this.executeSearch(query);
+        return;
+      }
+
+      if (query.length >= 2) {
+        this.executeSearch(query);
+        return;
+      }
+
+      this.searchResults = [];
+      this.searchSource = null;
+    });
+  }
+
   ngOnInit(): void {
     this.playlistId = this.route.snapshot.paramMap.get('id') ?? '';
     this.loadPlaylist();
 
     this.searchControl.valueChanges
       .pipe(
-        debounceTime(400),
+        debounceTime(200),
         distinctUntilChanged(),
         tap(() => {
           this.searchError = false;
-          this.isSearching = false;
-          this.searchResults = [];
+
+          if (this.searchSettings.useItunes()) {
+            this.searchSource = null;
+            this.isSearching = false;
+            this.searchResults = [];
+          }
         }),
         switchMap((term) => {
           const query = term.trim();
 
+          if (!this.searchSettings.useItunes()) {
+            return this.songSearchService.search(query);
+          }
+
           if (query.length < 2) {
-            return of([]);
+            return of({ songs: [], source: 'itunes' as const });
           }
 
           this.isSearching = true;
-          return this.itunesService.searchSongs(query);
+          return this.songSearchService.search(query);
         }),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: (results) => {
-          this.searchResults = results;
+        next: (result) => {
+          this.searchResults = result.songs;
+          this.searchSource = result.source;
           this.isSearching = false;
+          this.searchError = false;
         },
         error: () => {
           this.searchResults = [];
+          this.searchSource = null;
           this.isSearching = false;
           this.searchError = true;
         },
       });
+  }
+
+  get searchPlaceholder(): string {
+    return this.searchSettings.useItunes()
+      ? 'Buscar en iTunes...'
+      : 'Filtrar catálogo local...';
+  }
+
+  get searchSourceHint(): string | null {
+    if (this.searchSource === 'local-fallback') {
+      return 'iTunes no disponible. Mostrando catálogo local de respaldo.';
+    }
+
+    if (!this.searchSettings.useItunes()) {
+      return 'Catálogo local (20 canciones). Escribe para filtrar.';
+    }
+
+    return null;
+  }
+
+  get showSearchEmpty(): boolean {
+    const query = this.searchControl.value.trim();
+
+    if (this.searchSettings.useItunes()) {
+      return query.length >= 2;
+    }
+
+    return query.length > 0;
+  }
+
+  private applySearchResult(result: { songs: Song[]; source: SongSearchSource }): void {
+    this.searchResults = result.songs;
+    this.searchSource = result.source;
+    this.isSearching = false;
+    this.searchError = false;
+  }
+
+  private executeSearch(query: string): void {
+    if (this.searchSettings.useItunes()) {
+      this.isSearching = true;
+      this.searchResults = [];
+    }
+
+    this.searchError = false;
+
+    this.songSearchService.search(query).subscribe({
+      next: (result) => this.applySearchResult(result),
+      error: () => {
+        this.searchResults = [];
+        this.searchSource = null;
+        this.isSearching = false;
+        this.searchError = true;
+      },
+    });
   }
 
   get currentUserName(): string {
@@ -233,9 +327,16 @@ export class PlaylistDetailComponent implements OnInit {
 
   openSearchDialog(): void {
     this.searchControl.setValue('');
-    this.searchResults = [];
     this.searchError = false;
     this.searchDialogVisible = true;
+
+    if (!this.searchSettings.useItunes()) {
+      this.executeSearch('');
+      return;
+    }
+
+    this.searchResults = [];
+    this.searchSource = null;
   }
 
   addSong(song: Song): void {

@@ -3,3 +3,22 @@
   display: flex;
   align-items: center;
 }
+
+.user-header-menu__toggle-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.user-header-menu__toggle-check {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--app-primary-text);
+}
+
+.user-header-menu__note-icon {
+  font-style: normal;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1;
+}

@@ -194,6 +194,11 @@
   color: #f87171;
 }
 
+.detail-dialog__hint {
+  font-size: 0.75rem;
+  color: var(--app-text-muted);
+}
+
 .detail-dialog__empty {
   padding: 1rem 0;
   text-align: center;

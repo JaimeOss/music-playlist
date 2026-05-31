@@ -21,6 +21,19 @@
             <span class="p-menu-item-label" data-pc-section="itemlabel">Tema oscuro</span>
           }
         </a>
+      } @else if (item.id === 'itunes') {
+        <a
+          class="p-menu-item-link user-header-menu__toggle-item"
+          tabindex="-1"
+          pRipple
+          (click)="onItunesClick($event)"
+        >
+          <span class="p-menu-item-icon user-header-menu__note-icon" data-pc-section="itemicon" aria-hidden="true">♪</span>
+          <span class="p-menu-item-label" data-pc-section="itemlabel">Usar iTunes</span>
+          @if (searchSettings.useItunes()) {
+            <span class="user-header-menu__toggle-check pi pi-check" aria-hidden="true"></span>
+          }
+        </a>
       } @else {
         <a class="p-menu-item-link" tabindex="-1" pRipple>
           <span [class]="'p-menu-item-icon ' + item.icon" data-pc-section="itemicon"></span>
