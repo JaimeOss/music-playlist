@@ -5,6 +5,13 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# Proxy iTunes API (same-origin) — evita fallos de JSONP/CORS en Safari móvil
+[[redirects]]
+  from = "/api/itunes/*"
+  to = "https://itunes.apple.com/:splat"
+  status = 200
+  force = true
+
 # SPA: permite refrescar rutas como /home o /playlist/:id
 [[redirects]]
   from = "/*"

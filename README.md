@@ -83,8 +83,7 @@ src/app/
 
 ## Notas
 
-- La búsqueda de canciones usa la API pública de iTunes (JSONP). Si falla, desactiva bloqueadores de anuncios o scripts de terceros para `itunes.apple.com`.
-- Las canciones demo incluidas en las playlists iniciales no tienen preview de audio; agrega canciones desde iTunes para probar la reproducción.
+- La búsqueda de canciones usa la API de iTunes a través de un proxy en la misma URL (`/api/itunes/...`), compatible con móvil y Safari.
 - Al refrescar la página en rutas internas (`/home`, `/playlist/...`), Netlify redirige a `index.html` gracie a la regla SPA del `netlify.toml`.
 
 ## Tecnologías

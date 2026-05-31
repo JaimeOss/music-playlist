@@ -148,3 +148,56 @@ body {
   background: #b91c1c;
   border-color: #b91c1c;
 }
+
+/* Labels en una sola línea; si no cabe, solo icono (app-btn--collapse-label) */
+.p-button .p-button-label {
+  white-space: nowrap;
+}
+
+.p-button.app-btn--collapse-label:has(.p-button-icon) {
+  flex-shrink: 0;
+}
+
+.home__toolbar {
+  container: home-toolbar / inline-size;
+}
+
+.detail__actions {
+  container: detail-actions / inline-size;
+}
+
+@mixin btn-icon-only {
+  .p-button-label {
+    display: none;
+  }
+
+  .p-button-icon {
+    margin: 0;
+  }
+
+  gap: 0;
+  width: 2.5rem;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  justify-content: center;
+}
+
+@container home-toolbar (max-width: 26rem) {
+  .home-create-btn.app-btn--collapse-label.p-button:has(.p-button-icon) {
+    @include btn-icon-only;
+  }
+}
+
+@container detail-actions (max-width: 22rem) {
+  .detail-action-btn.app-btn--collapse-label.p-button:has(.p-button-icon) {
+    @include btn-icon-only;
+  }
+}
+
+@media (max-width: 480px) {
+  .detail-back-btn.app-btn--collapse-label.p-button:has(.p-button-icon),
+  .home__empty .home-create-btn.app-btn--collapse-label.p-button:has(.p-button-icon) {
+    @include btn-icon-only;
+  }
+}

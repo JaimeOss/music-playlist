@@ -1,7 +1,7 @@
 import { Component, DestroyRef, ChangeDetectorRef, inject, OnInit, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   debounceTime,
@@ -61,6 +61,7 @@ export class PlaylistDetailComponent implements OnInit {
   private readonly itunesService = inject(ItunesService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly fb = inject(FormBuilder);
 
   playlist: Playlist | null = null;
   playlistId = '';
@@ -68,6 +69,7 @@ export class PlaylistDetailComponent implements OnInit {
   private readonly blockedPlaySongIds = new Set<string>();
 
   searchDialogVisible = false;
+  renameDialogVisible = false;
   deleteDialogVisible = false;
   deleteSongDialogVisible = false;
   songToDelete: Song | null = null;
@@ -78,7 +80,16 @@ export class PlaylistDetailComponent implements OnInit {
   isSearching = false;
   searchError = false;
 
+  readonly renameForm = this.fb.group({
+    name: ['', [Validators.required, Validators.minLength(2)]],
+  });
+
   readonly playlistMenuItems: MenuItem[] = [
+    {
+      label: 'Renombrar',
+      icon: 'pi pi-pencil',
+      command: () => this.openRenameDialog(),
+    },
     {
       label: 'Eliminar playlist',
       icon: 'pi pi-trash',
@@ -171,6 +182,28 @@ export class PlaylistDetailComponent implements OnInit {
 
   openPlaylistMenu(event: Event): void {
     this.playlistMenu.toggle(event);
+  }
+
+  openRenameDialog(): void {
+    this.renameForm.reset({ name: this.playlist?.name ?? '' });
+    this.renameDialogVisible = true;
+  }
+
+  confirmRename(): void {
+    if (this.renameForm.invalid || !this.playlist) {
+      this.renameForm.markAllAsTouched();
+      return;
+    }
+
+    const name = this.renameForm.getRawValue().name!;
+    this.playlistService.renamePlaylist(this.playlistId, name);
+    this.loadPlaylist();
+
+    if (this.playback.isActiveInPlaylist(this.playlistId)) {
+      this.playback.setPlaylistContext(this.playlistId, name);
+    }
+
+    this.renameDialogVisible = false;
   }
 
   openDeleteDialog(): void {

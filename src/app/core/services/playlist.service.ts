@@ -8,15 +8,7 @@ const DEFAULT_COVER = '/images/playlist-default.svg';
 @Injectable({ providedIn: 'root' })
 export class PlaylistService {
   getPlaylists(): Playlist[] {
-    const stored = this.readFromStorage();
-
-    if (stored.length === 0) {
-      const seed = this.createSeedPlaylists();
-      this.saveToStorage(seed);
-      return seed;
-    }
-
-    return stored;
+    return this.readFromStorage();
   }
 
   getPlaylistById(id: string): Playlist | undefined {
@@ -37,6 +29,24 @@ export class PlaylistService {
     this.saveToStorage(playlists);
 
     return playlist;
+  }
+
+  renamePlaylist(id: string, name: string): void {
+    const trimmed = name.trim();
+
+    if (trimmed.length < 2) {
+      return;
+    }
+
+    const playlists = this.getPlaylists();
+    const playlist = playlists.find((item) => item.id === id);
+
+    if (!playlist) {
+      return;
+    }
+
+    playlist.name = trimmed;
+    this.saveToStorage(playlists);
   }
 
   deletePlaylist(id: string): void {
@@ -109,54 +119,5 @@ export class PlaylistService {
       localStorage.removeItem(STORAGE_KEY);
       return [];
     }
-  }
-
-  private createSeedPlaylists(): Playlist[] {
-    const rockSongs: Song[] = [
-      {
-        id: '1001',
-        title: 'Blinding Lights',
-        artist: 'The Weeknd',
-        duration: 200040,
-        cover: DEFAULT_COVER,
-        previewUrl: '',
-      },
-      {
-        id: '1002',
-        title: 'Levitating',
-        artist: 'Dua Lipa',
-        duration: 203064,
-        cover: DEFAULT_COVER,
-        previewUrl: '',
-      },
-    ];
-
-    const chillSongs: Song[] = [
-      {
-        id: '2001',
-        title: 'Sunflower',
-        artist: 'Post Malone',
-        duration: 157560,
-        cover: DEFAULT_COVER,
-        previewUrl: '',
-      },
-    ];
-
-    return [
-      {
-        id: crypto.randomUUID(),
-        name: 'Rock Mix',
-        cover: DEFAULT_COVER,
-        songs: rockSongs,
-        createdAt: new Date('2025-01-15'),
-      },
-      {
-        id: crypto.randomUUID(),
-        name: 'Chill Vibes',
-        cover: DEFAULT_COVER,
-        songs: chillSongs,
-        createdAt: new Date('2025-02-20'),
-      },
-    ];
   }
 }
