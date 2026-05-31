@@ -135,6 +135,9 @@ export class AudioPlayerComponent implements OnDestroy {
     const song = targetSong ?? this.song;
 
     if (!song?.previewUrl) {
+      this.isPlaying = false;
+      this.playingChange.emit(false);
+      this.cdr.markForCheck();
       return;
     }
 
@@ -150,11 +153,14 @@ export class AudioPlayerComponent implements OnDestroy {
       return;
     }
 
-    this.resumePlayback(this.playbackSession);
+    void this.resumePlayback(this.playbackSession);
   }
 
   toggle(): void {
     if (!this.song?.previewUrl) {
+      this.isPlaying = false;
+      this.playingChange.emit(false);
+      this.cdr.markForCheck();
       return;
     }
 
@@ -173,7 +179,7 @@ export class AudioPlayerComponent implements OnDestroy {
       return;
     }
 
-    this.resumePlayback(this.playbackSession);
+    void this.resumePlayback(this.playbackSession);
   }
 
   private startSong(song: Song): void {
@@ -182,7 +188,7 @@ export class AudioPlayerComponent implements OnDestroy {
     this.stopCurrentTrack();
     this.loadedSongId = song.id;
     this.bindAudioEvents(session);
-    this.audio.src = song.previewUrl;
+    this.prepareAudioSource(song.previewUrl);
     this.audio.load();
 
     const onCanPlay = (): void => {
@@ -196,7 +202,7 @@ export class AudioPlayerComponent implements OnDestroy {
         return;
       }
 
-      this.resumePlayback(session);
+      void this.resumePlayback(session);
     };
 
     this.pendingCanPlayHandler = onCanPlay;
@@ -207,34 +213,33 @@ export class AudioPlayerComponent implements OnDestroy {
     }
   }
 
-  private resumePlayback(session: number): void {
+  private async resumePlayback(session: number): Promise<void> {
     if (session !== this.playbackSession) {
       return;
     }
 
-    void this.resumeAudioContext();
+    await this.resumeAudioContext();
 
-    this.audio
-      .play()
-      .then(() => {
-        if (session !== this.playbackSession) {
-          this.audio.pause();
-          return;
-        }
+    try {
+      await this.audio.play();
 
-        this.isPlaying = true;
-        this.playingChange.emit(true);
-        this.cdr.markForCheck();
-      })
-      .catch(() => {
-        if (session !== this.playbackSession) {
-          return;
-        }
+      if (session !== this.playbackSession) {
+        this.audio.pause();
+        return;
+      }
 
-        this.isPlaying = false;
-        this.playingChange.emit(false);
-        this.cdr.markForCheck();
-      });
+      this.isPlaying = true;
+      this.playingChange.emit(true);
+      this.cdr.markForCheck();
+    } catch {
+      if (session !== this.playbackSession) {
+        return;
+      }
+
+      this.isPlaying = false;
+      this.playingChange.emit(false);
+      this.cdr.markForCheck();
+    }
   }
 
   private bindAudioEvents(session: number): void {
@@ -346,6 +351,13 @@ export class AudioPlayerComponent implements OnDestroy {
       return;
     }
 
+    if (!this.shouldUseWebAudioVolume()) {
+      this.applyVolume();
+      return;
+    }
+
+    this.audio.crossOrigin = 'anonymous';
+
     const AudioContextCtor =
       window.AudioContext ??
       (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
@@ -367,6 +379,25 @@ export class AudioPlayerComponent implements OnDestroy {
     }
 
     this.applyVolume();
+  }
+
+  private shouldUseWebAudioVolume(): boolean {
+    if (typeof navigator === 'undefined') {
+      return false;
+    }
+
+    return (
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+    );
+  }
+
+  private prepareAudioSource(previewUrl: string): void {
+    if (this.shouldUseWebAudioVolume()) {
+      this.audio.crossOrigin = 'anonymous';
+    }
+
+    this.audio.src = previewUrl;
   }
 
   private async resumeAudioContext(): Promise<void> {

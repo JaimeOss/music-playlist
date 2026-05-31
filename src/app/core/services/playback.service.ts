@@ -62,7 +62,12 @@ export class PlaybackService {
     }
 
     this.currentSong.set(song);
-    this.isPlaying.set(true);
+
+    if (!song.previewUrl) {
+      this.isPlaying.set(false);
+      return;
+    }
+
     this.player?.play(song);
   }
 
