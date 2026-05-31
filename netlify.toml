@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = "dist/music-playlist/browser"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA: permite refrescar rutas como /home o /playlist/:id
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

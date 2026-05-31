@@ -1,59 +1,96 @@
-# MusicPlaylist
+# Music Playlist
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.13.
+Aplicación web para crear y administrar listas de reproducción de música. Desarrollada con **Angular 21**, **PrimeNG** y **Tailwind CSS**.
 
-## Development server
+## Enlaces
 
-To start a local development server, run:
+| Recurso | URL |
+|---------|-----|
+| **Demo en vivo** | _Pendiente: añade aquí la URL de Netlify tras el primer deploy_ |
+| **Repositorio** | https://github.com/JaimeOss/music-playlist |
 
-```bash
-ng serve
-```
+## Credenciales de prueba
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+| Campo | Valor |
+|-------|--------|
+| Correo | `usuario@musicapp.com` |
+| Contraseña | `123456` |
 
-## Code scaffolding
+> El correo debe usar el dominio `@musicapp.com` (validación del formulario de login).
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Funcionalidades
 
-```bash
-ng generate component component-name
-```
+- Inicio y cierre de sesión con guards de ruta
+- Creación y eliminación de playlists
+- Detalle de playlist con listado de canciones
+- Agregar canciones desde la API de iTunes (título, artista, duración, preview)
+- Eliminar canciones y reordenar por arrastre
+- Reproductor global con play/pausa, anterior/siguiente, shuffle y loop
+- Persistencia local (`localStorage` para playlists, `sessionStorage` para sesión)
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Ejecución local
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+Requisitos: **Node.js 20+** y **npm**.
 
 ```bash
-ng test
+npm install
+npm start
 ```
 
-## Running end-to-end tests
+Abre http://localhost:4200
 
-For end-to-end (e2e) testing, run:
+Build de producción:
 
 ```bash
-ng e2e
+npm run build
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Los artefactos se generan en `dist/music-playlist/browser`.
 
-## Additional Resources
+## Despliegue en Netlify
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+El proyecto incluye [`netlify.toml`](./netlify.toml) con la configuración necesaria.
+
+### Opción A — Desde GitHub (recomendada)
+
+1. Sube los cambios a GitHub (`git push`).
+2. Entra en [Netlify](https://app.netlify.com) → **Add new site** → **Import an existing project**.
+3. Conecta el repositorio `JaimeOss/music-playlist`.
+4. Netlify detectará automáticamente:
+   - **Build command:** `npm run build`
+   - **Publish directory:** `dist/music-playlist/browser`
+5. Pulsa **Deploy site**.
+6. Cuando termine, copia la URL (ej. `https://music-playlist-xxxxx.netlify.app`) y actualiza la tabla **Demo en vivo** de este README.
+
+### Opción B — Deploy manual (CLI)
+
+```bash
+npm install -g netlify-cli
+npm run build
+netlify login
+netlify init
+netlify deploy --prod
+```
+
+## Estructura del proyecto
+
+```
+src/app/
+├── core/           # Servicios, guards, modelos, validadores
+├── features/       # Login, home, detalle de playlist
+└── shared/         # Componentes reutilizables (player, song-item, etc.)
+```
+
+## Notas
+
+- La búsqueda de canciones usa la API pública de iTunes (JSONP). Si falla, desactiva bloqueadores de anuncios o scripts de terceros para `itunes.apple.com`.
+- Las canciones demo incluidas en las playlists iniciales no tienen preview de audio; agrega canciones desde iTunes para probar la reproducción.
+- Al refrescar la página en rutas internas (`/home`, `/playlist/...`), Netlify redirige a `index.html` gracie a la regla SPA del `netlify.toml`.
+
+## Tecnologías
+
+- Angular 21 (standalone components, signals, lazy routes)
+- Angular CDK (drag & drop)
+- PrimeNG + PrimeIcons
+- Tailwind CSS 4
+- RxJS
