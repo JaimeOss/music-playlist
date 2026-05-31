@@ -1,4 +1,4 @@
-<div [class.pb-28]="playback.hasActivePlayback()">
+<div [class]="playback.hasActivePlayback() ? 'pb-40 lg:pb-28' : ''">
   <router-outlet />
 </div>
 

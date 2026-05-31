@@ -1,29 +1,24 @@
-<div
-  class="h-full w-full overflow-hidden bg-[var(--app-image-bg)]"
-  [class.group-hover:scale-105]="hoverScale"
-  [class.transition]="hoverScale"
-  [class.duration-200]="hoverScale"
->
+<div class="playlist-cover" [class.playlist-cover--hover-scale]="hoverScale">
   @if (covers.length === 0) {
-    <img [src]="defaultCover" [alt]="alt" class="h-full w-full object-cover" />
+    <img [src]="defaultCover" [alt]="alt" class="playlist-cover__image" />
   } @else if (covers.length === 1) {
-    <img [src]="covers[0]" [alt]="alt" class="h-full w-full object-cover" />
+    <img [src]="covers[0]" [alt]="alt" class="playlist-cover__image" />
   } @else if (covers.length === 2) {
-    <div class="grid h-full w-full grid-cols-2 gap-0.5">
+    <div class="playlist-cover__grid playlist-cover__grid--cols-2">
       @for (cover of covers; track cover) {
-        <img [src]="cover" [alt]="alt" class="h-full w-full object-cover" />
+        <img [src]="cover" [alt]="alt" class="playlist-cover__image" />
       }
     </div>
   } @else if (covers.length === 3) {
-    <div class="grid h-full w-full grid-cols-2 grid-rows-2 gap-0.5">
-      <img [src]="covers[0]" [alt]="alt" class="row-span-2 h-full w-full object-cover" />
-      <img [src]="covers[1]" [alt]="alt" class="h-full w-full object-cover" />
-      <img [src]="covers[2]" [alt]="alt" class="h-full w-full object-cover" />
+    <div class="playlist-cover__grid playlist-cover__grid--2x2">
+      <img [src]="covers[0]" [alt]="alt" class="playlist-cover__image playlist-cover__image--span-rows" />
+      <img [src]="covers[1]" [alt]="alt" class="playlist-cover__image" />
+      <img [src]="covers[2]" [alt]="alt" class="playlist-cover__image" />
     </div>
   } @else {
-    <div class="grid h-full w-full grid-cols-2 grid-rows-2 gap-0.5">
+    <div class="playlist-cover__grid playlist-cover__grid--2x2">
       @for (cover of covers; track cover) {
-        <img [src]="cover" [alt]="alt" class="h-full w-full object-cover" />
+        <img [src]="cover" [alt]="alt" class="playlist-cover__image" />
       }
     </div>
   }

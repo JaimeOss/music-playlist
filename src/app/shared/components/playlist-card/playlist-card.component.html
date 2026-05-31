@@ -1,22 +1,14 @@
-<button
-  type="button"
-  (click)="onCardClick()"
-  class="group w-full cursor-pointer rounded-xl bg-[var(--app-bg-card)] p-3 text-left transition duration-200 hover:-translate-y-1 hover:bg-[var(--app-bg-card-hover)] hover:shadow-lg hover:shadow-[var(--app-shadow-card)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
->
-  <div class="mb-3 aspect-square overflow-hidden rounded-lg">
-    <app-playlist-cover
-      [songs]="playlist.songs"
-      [alt]="playlist.name"
-      [hoverScale]="true"
-    />
+<button type="button" class="playlist-card group" (click)="onCardClick()">
+  <div class="playlist-card__cover">
+    <app-playlist-cover [songs]="playlist.songs" [alt]="playlist.name" [hoverScale]="true" />
   </div>
-  <div class="mb-1 flex items-center gap-2">
-    <h3 class="truncate text-sm font-semibold text-[var(--app-text)]">{{ playlist.name }}</h3>
+
+  <div class="playlist-card__header">
+    <h3 class="playlist-card__title">{{ playlist.name }}</h3>
     @if (playback.playlistId() === playlist.id && playback.isPlaying()) {
-      <span class="shrink-0 rounded-full bg-blue-600/20 px-2 py-0.5 text-[10px] font-medium text-blue-400">
-        Escuchando ahora
-      </span>
+      <span class="playlist-card__badge">Escuchando ahora</span>
     }
   </div>
-  <p class="mt-1 text-xs text-[var(--app-text-muted)]">{{ playlistMetaLabel }}</p>
+
+  <p class="playlist-card__meta">{{ playlistMetaLabel }}</p>
 </button>

@@ -1,0 +1,79 @@
+:host {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.delete-explosion__ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid rgb(239 68 68 / 65%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  animation: delete-explosion-ring 0.62s ease-out forwards;
+}
+
+:host(.delete-explosion--large) .delete-explosion__ring {
+  width: 4rem;
+  height: 4rem;
+  border-width: 3px;
+}
+
+.delete-explosion__particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--particle-size, 5px);
+  height: var(--particle-size, 5px);
+  border-radius: 50%;
+  background-color: var(--particle-color);
+  opacity: 0;
+  animation: delete-explosion-particle 0.58s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--particle-index) * 0.014s);
+}
+
+:host(.delete-explosion--large) .delete-explosion__particle {
+  --particle-size: 8px;
+}
+
+@keyframes delete-explosion-ring {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(4.5);
+  }
+}
+
+@keyframes delete-explosion-particle {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--particle-angle)) translateY(0) scale(1);
+  }
+
+  70% {
+    opacity: 0.9;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--particle-angle)) translateY(var(--particle-distance))
+      scale(0.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .delete-explosion__ring,
+  .delete-explosion__particle {
+    animation: none;
+    opacity: 0;
+  }
+}

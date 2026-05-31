@@ -326,6 +326,7 @@ export class AudioPlayerComponent implements OnDestroy {
     }
 
     this.applyVolume();
+    this.cdr.markForCheck();
   }
 
   private loadVolume(): void {

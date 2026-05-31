@@ -6,11 +6,12 @@ import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { AuthService } from '../../../core/services/auth.service';
 import { domainValidator } from '../../../core/validators/domain.validator';
+import { LoginLoadingScreenComponent } from '../login-loading-screen/login-loading-screen.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, Button, InputText, Message],
+  imports: [ReactiveFormsModule, Button, InputText, Message, LoginLoadingScreenComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
@@ -20,11 +21,37 @@ export class LoginComponent {
   private readonly router = inject(Router);
 
   authError = false;
+  showLoadingScreen = false;
+  passwordVisible = false;
+
+  private pendingLogin: { email: string; password: string } | null = null;
 
   readonly form = this.fb.group({
     email: ['', [Validators.required, Validators.email, domainValidator('@musicapp.com')]],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
+
+  onLoadingFinished(): void {
+    this.showLoadingScreen = false;
+
+    if (!this.pendingLogin) {
+      return;
+    }
+
+    const { email, password } = this.pendingLogin;
+    this.pendingLogin = null;
+
+    if (this.authService.login(email, password)) {
+      this.router.navigate(['/home']);
+      return;
+    }
+
+    this.authError = true;
+  }
+
+  togglePasswordVisibility(): void {
+    this.passwordVisible = !this.passwordVisible;
+  }
 
   onSubmit(): void {
     this.authError = false;
@@ -34,14 +61,13 @@ export class LoginComponent {
       return;
     }
 
-    const { email, password } = this.form.getRawValue();
-
-    if (this.authService.login(email!, password!)) {
-      this.router.navigate(['/home']);
+    if (this.showLoadingScreen) {
       return;
     }
 
-    this.authError = true;
+    const { email, password } = this.form.getRawValue();
+    this.pendingLogin = { email: email!, password: password! };
+    this.showLoadingScreen = true;
   }
 
   isInvalid(field: 'email' | 'password'): boolean {

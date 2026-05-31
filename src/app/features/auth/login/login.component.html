@@ -1,35 +1,19 @@
-<div class="flex min-h-dvh flex-col lg:flex-row">
-  <aside
-    class="login-hero relative min-h-[12rem] lg:min-h-dvh lg:w-2/3"
-    aria-hidden="true"
-  >
-    <img
-      src="/images/cover.png"
-      alt=""
-      class="login-hero__image"
-    />
+<div class="login-page" [class.login-page--busy]="showLoadingScreen">  <aside class="login-hero" aria-hidden="true">
+    <img src="/images/cover.png" alt="" class="login-hero__image" />
     <div class="login-hero__overlay"></div>
   </aside>
 
-  <main
-    class="flex flex-1 items-center justify-center bg-[var(--app-login-main-bg)] px-6 py-10 lg:w-1/3 lg:px-10"
-  >
-    <div class="w-full max-w-sm">
-      <h1 class="mb-8 text-2xl font-semibold tracking-tight text-[var(--app-text)]">
-        Inicio de sesión
-      </h1>
+  <main class="login-main">
+    <div class="login-panel">
+      <h1 class="login-panel__title">Inicio de sesión</h1>
 
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
         @if (authError) {
-          <p-message
-            severity="error"
-            text="Correo o contraseña incorrectos"
-            styleClass="w-full"
-          />
+          <p-message severity="error" text="Correo o contraseña incorrectos" styleClass="w-full" />
         }
 
-        <div class="flex flex-col gap-2">
-          <label for="email" class="text-sm font-medium text-[var(--app-text-secondary)]">Correo</label>
+        <div class="login-field">
+          <label for="email" class="login-field__label">Correo</label>
           <input
             pInputText
             id="email"
@@ -41,24 +25,35 @@
             [invalid]="isInvalid('email')"
           />
           @if (getEmailError(); as error) {
-            <p class="text-sm text-red-400">{{ error }}</p>
+            <p class="login-field__error">{{ error }}</p>
           }
         </div>
 
-        <div class="flex flex-col gap-2">
-          <label for="password" class="text-sm font-medium text-[var(--app-text-secondary)]">Contraseña</label>
-          <input
-            pInputText
-            id="password"
-            type="password"
-            formControlName="password"
-            placeholder="••••••"
-            autocomplete="current-password"
-            class="login-input w-full"
-            [invalid]="isInvalid('password')"
-          />
+        <div class="login-field">
+          <label for="password" class="login-field__label">Contraseña</label>
+          <div class="login-password">
+            <input
+              pInputText
+              id="password"
+              [type]="passwordVisible ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="••••••"
+              autocomplete="current-password"
+              class="login-input login-password__input w-full"
+              [invalid]="isInvalid('password')"
+            />
+            <button
+              type="button"
+              class="login-password__toggle"
+              [attr.aria-label]="passwordVisible ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              [attr.aria-pressed]="passwordVisible"
+              (click)="togglePasswordVisibility()"
+            >
+              <i [class]="passwordVisible ? 'pi pi-eye-slash' : 'pi pi-eye'" aria-hidden="true"></i>
+            </button>
+          </div>
           @if (getPasswordError(); as error) {
-            <p class="text-sm text-red-400">{{ error }}</p>
+            <p class="login-field__error">{{ error }}</p>
           }
         </div>
 
@@ -66,21 +61,23 @@
           type="submit"
           label="Iniciar sesión"
           styleClass="login-submit w-full"
-          [disabled]="form.invalid"
+          [disabled]="form.invalid || showLoadingScreen"
         />
       </form>
 
-      <div class="mt-8 rounded-lg border border-[var(--app-demo-box-border)] bg-[var(--app-demo-box-bg)] p-4">
-        <p class="mb-2 text-xs font-medium uppercase tracking-wider text-[var(--app-text-subtle)]">
-          Credenciales de prueba
+      <div class="login-demo">
+        <p class="login-demo__title">Credenciales de prueba</p>
+        <p class="login-demo__line">
+          <span class="login-demo__label">Correo:</span> usuario@musicapp.com
         </p>
-        <p class="text-sm text-[var(--app-text-muted)]">
-          <span class="text-[var(--app-text-secondary)]">Correo:</span> usuario@musicapp.com
-        </p>
-        <p class="text-sm text-[var(--app-text-muted)]">
-          <span class="text-[var(--app-text-secondary)]">Contraseña:</span> 123456
+        <p class="login-demo__line">
+          <span class="login-demo__label">Contraseña:</span> 123456
         </p>
       </div>
     </div>
   </main>
 </div>
+
+@if (showLoadingScreen) {
+  <app-login-loading-screen (finished)="onLoadingFinished()" />
+}

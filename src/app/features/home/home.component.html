@@ -1,20 +1,16 @@
-<div class="min-h-dvh bg-[var(--app-bg)] text-[var(--app-text)]">
-  <!-- Header -->
-  <header
-    class="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--app-border)] bg-[var(--app-header-bg)] px-4 py-4 backdrop-blur sm:px-6"
-  >
-    <div class="flex items-center gap-3">
+<div class="home">
+  <header class="home__header">
+    <div class="home__header-user">
       <p-avatar [label]="userInitials" shape="circle" styleClass="home-avatar" />
-      <span class="hidden text-sm text-[var(--app-text-secondary)] sm:inline">{{ currentUserName }}</span>
+      <span class="home__user-name">{{ currentUserName }}</span>
     </div>
 
     <app-user-header-menu menuTriggerClass="home-menu-trigger" (logout)="logout()" />
   </header>
 
-  <!-- Contenido -->
-  <main class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-    <div class="mb-8 flex items-center justify-between gap-4">
-      <h1 class="text-2xl font-semibold tracking-tight">Listas de reproducción</h1>
+  <main class="home__main">
+    <div class="home__toolbar">
+      <h1 class="home__title">Listas de reproducción</h1>
       <p-button
         type="button"
         icon="pi pi-plus"
@@ -25,8 +21,8 @@
     </div>
 
     @if (playlists.length === 0) {
-      <div class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--app-border-dashed)] py-16 text-center">
-        <p class="mb-4 text-[var(--app-text-muted)]">No tienes playlists aún</p>
+      <div class="home__empty">
+        <p class="home__empty-text">No tienes playlists aún</p>
         <p-button
           type="button"
           icon="pi pi-plus"
@@ -36,7 +32,7 @@
         />
       </div>
     } @else {
-      <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <div class="home__grid">
         @for (playlist of playlists; track playlist.id) {
           <app-playlist-card [playlist]="playlist" (cardClick)="onPlaylistClick($event)" />
         }
@@ -53,9 +49,9 @@
   [style]="{ width: '24rem' }"
   styleClass="home-dialog"
 >
-  <form [formGroup]="createForm" (ngSubmit)="createPlaylist()" class="flex flex-col gap-4 pt-2">
-    <div class="flex flex-col gap-2">
-      <label for="playlistName" class="text-sm font-medium text-[var(--app-text-secondary)]">Nombre</label>
+  <form [formGroup]="createForm" (ngSubmit)="createPlaylist()" class="home-dialog__form">
+    <div class="home-dialog__field">
+      <label for="playlistName" class="home-dialog__label">Nombre</label>
       <input
         pInputText
         id="playlistName"
@@ -65,14 +61,14 @@
         [invalid]="createForm.get('name')?.invalid && createForm.get('name')?.touched"
       />
       @if (createForm.get('name')?.touched && createForm.get('name')?.errors?.['required']) {
-        <p class="text-sm text-red-400">El nombre es obligatorio</p>
+        <p class="home-dialog__error">El nombre es obligatorio</p>
       }
       @if (createForm.get('name')?.touched && createForm.get('name')?.errors?.['minlength']) {
-        <p class="text-sm text-red-400">Mínimo 2 caracteres</p>
+        <p class="home-dialog__error">Mínimo 2 caracteres</p>
       }
     </div>
 
-    <div class="flex justify-end gap-2">
+    <div class="home-dialog__actions">
       <p-button
         type="button"
         label="Cancelar"

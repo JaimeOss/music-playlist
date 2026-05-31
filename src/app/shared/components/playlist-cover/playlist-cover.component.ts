@@ -7,6 +7,7 @@ const DEFAULT_COVER = '/images/playlist-default.svg';
   selector: 'app-playlist-cover',
   standalone: true,
   templateUrl: './playlist-cover.component.html',
+  styleUrl: './playlist-cover.component.scss',
 })
 export class PlaylistCoverComponent {
   @Input({ required: true }) songs!: Song[];

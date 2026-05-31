@@ -1,0 +1,12 @@
+<div class="delete-explosion__ring" aria-hidden="true"></div>
+
+@for (particle of particles; track particle.index) {
+  <span
+    class="delete-explosion__particle"
+    aria-hidden="true"
+    [style.--particle-index]="particle.index"
+    [style.--particle-angle]="particle.angle"
+    [style.--particle-distance]="particle.distance"
+    [style.--particle-color]="particle.color"
+  ></span>
+}

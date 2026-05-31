@@ -24,6 +24,8 @@ import { PlaylistService } from '../../core/services/playlist.service';
 import { Playlist } from '../../core/models/playlist.model';
 import { Song } from '../../core/models/song.model';
 import { formatDuration, formatTotalDuration } from '../../core/utils/format-duration.util';
+import { runAfterDeleteAnimation } from '../../core/constants/delete-animation.constants';
+import { DeleteExplosionComponent } from '../../shared/components/delete-explosion/delete-explosion.component';
 import { SongItemComponent } from '../../shared/components/song-item/song-item.component';
 import { PlaylistCoverComponent } from '../../shared/components/playlist-cover/playlist-cover.component';
 import { UserHeaderMenuComponent } from '../../shared/components/user-header-menu/user-header-menu.component';
@@ -41,6 +43,7 @@ import { UserHeaderMenuComponent } from '../../shared/components/user-header-men
     Menu,
     ProgressSpinner,
     SongItemComponent,
+    DeleteExplosionComponent,
     PlaylistCoverComponent,
     UserHeaderMenuComponent,
   ],
@@ -68,6 +71,8 @@ export class PlaylistDetailComponent implements OnInit {
   deleteDialogVisible = false;
   deleteSongDialogVisible = false;
   songToDelete: Song | null = null;
+  readonly deletingSongIds = new Set<string>();
+  isPlaylistDeleting = false;
   searchControl = new FormControl('', { nonNullable: true });
   searchResults: Song[] = [];
   isSearching = false;
@@ -173,14 +178,18 @@ export class PlaylistDetailComponent implements OnInit {
   }
 
   deletePlaylist(): void {
-    if (!this.playlist) {
+    if (!this.playlist || this.isPlaylistDeleting) {
       return;
     }
 
-    this.playback.closeIfPlaylist(this.playlistId);
-    this.playlistService.deletePlaylist(this.playlistId);
     this.deleteDialogVisible = false;
-    this.router.navigate(['/home']);
+    this.isPlaylistDeleting = true;
+
+    runAfterDeleteAnimation(() => {
+      this.playback.closeIfPlaylist(this.playlistId);
+      this.playlistService.deletePlaylist(this.playlistId);
+      this.router.navigate(['/home']);
+    });
   }
 
   logout(): void {
@@ -228,13 +237,19 @@ export class PlaylistDetailComponent implements OnInit {
   }
 
   confirmDeleteSong(): void {
-    if (!this.songToDelete) {
+    if (!this.songToDelete || this.deletingSongIds.has(this.songToDelete.id)) {
       return;
     }
 
-    this.removeSong(this.songToDelete);
-    this.songToDelete = null;
+    const song = this.songToDelete;
     this.deleteSongDialogVisible = false;
+    this.songToDelete = null;
+    this.deletingSongIds.add(song.id);
+
+    runAfterDeleteAnimation(() => {
+      this.removeSong(song);
+      this.deletingSongIds.delete(song.id);
+    });
   }
 
   cancelDeleteSong(): void {

@@ -1,7 +1,182 @@
+.login-page {
+  position: relative;
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+}
+
+.login-page--busy {
+  pointer-events: none;
+  user-select: none;
+}
+
 .login-hero {
   position: relative;
   overflow: hidden;
+  min-height: 12rem;
   background-color: var(--app-login-hero-bg);
+}
+
+.login-main {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+}
+
+.login-panel {
+  width: 100%;
+  max-width: 24rem;
+}
+
+.login-panel__title {
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--app-text);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.login-field__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--app-text-secondary);
+}
+
+.login-field__error {
+  font-size: 0.875rem;
+  color: #f87171;
+}
+
+.login-password {
+  position: relative;
+}
+
+.login-password__input {
+  padding-right: 2.75rem;
+}
+
+.login-password__toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.625rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--app-text-subtle);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.login-password__toggle:hover {
+  background-color: var(--app-hover);
+  color: var(--app-text-secondary);
+}
+
+.login-password__toggle:focus-visible {
+  outline: 2px solid var(--app-primary);
+  outline-offset: 2px;
+}
+
+.login-demo {
+  margin-top: 2rem;
+  border: 1px solid var(--app-demo-box-border);
+  border-radius: 0.5rem;
+  background-color: var(--app-demo-box-bg);
+  padding: 1rem;
+}
+
+.login-demo__title {
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--app-text-subtle);
+}
+
+.login-demo__line {
+  font-size: 0.875rem;
+  color: var(--app-text-muted);
+}
+
+.login-demo__label {
+  color: var(--app-text-secondary);
+}
+
+@media (max-width: 1023px) {
+  .login-page {
+    display: block;
+  }
+
+  .login-hero {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    min-height: 100dvh;
+  }
+
+  .login-hero__overlay {
+    background: linear-gradient(
+      180deg,
+      rgb(15 23 42 / 55%) 0%,
+      rgb(15 23 42 / 75%) 100%
+    );
+  }
+
+  .login-main {
+    position: relative;
+    z-index: 1;
+    min-height: 100dvh;
+    padding: 1.5rem;
+  }
+
+  .login-panel {
+    padding: 1.75rem 1.5rem;
+    border: 1px solid var(--app-login-panel-border);
+    border-radius: 1rem;
+    background-color: var(--app-login-panel-bg);
+    box-shadow: 0 8px 32px rgb(0 0 0 / 25%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .login-page {
+    flex-direction: row;
+  }
+
+  .login-hero {
+    min-height: 100dvh;
+    width: 66.666%;
+  }
+
+  .login-main {
+    width: 33.333%;
+    background-color: var(--app-login-main-bg);
+    padding-inline: 2.5rem;
+  }
 }
 
 .login-hero__image {
@@ -27,8 +202,8 @@
 }
 
 :host ::ng-deep .login-input.p-inputtext:enabled:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 1px #2563eb;
+  border-color: var(--app-primary);
+  box-shadow: 0 0 0 1px var(--app-primary);
 }
 
 :host ::ng-deep .login-input.p-inputtext.ng-invalid.ng-touched {
@@ -36,13 +211,13 @@
 }
 
 :host ::ng-deep .login-submit.p-button {
-  background-color: #2563eb;
-  border-color: #2563eb;
+  background-color: var(--app-primary);
+  border-color: var(--app-primary);
 }
 
 :host ::ng-deep .login-submit.p-button:enabled:hover {
-  background-color: #1d4ed8;
-  border-color: #1d4ed8;
+  background-color: var(--app-primary-hover);
+  border-color: var(--app-primary-hover);
 }
 
 :host ::ng-deep .login-submit.p-button:disabled {

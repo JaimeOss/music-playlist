@@ -1,18 +1,16 @@
 <div
   role="button"
   tabindex="0"
+  class="song-item"
+  [class.song-item--selected]="isSelected"
   (click)="handleRowClick()"
   (keydown.enter)="handleRowClick()"
-  class="flex cursor-pointer items-center gap-3 border-b border-[var(--app-border)] px-2 py-3 transition hover:bg-[var(--app-bg-hover)]"
-  [class.bg-[var(--app-selected-bg)]]="isSelected"
-  [class.border-l-2]="isSelected"
-  [class.border-l-blue-500]="isSelected"
 >
   @if (reorderable) {
     <button
       type="button"
       cdkDragHandle
-      class="flex h-10 w-8 shrink-0 cursor-grab items-center justify-center rounded-md text-[var(--app-text-subtle)] transition hover:bg-[var(--app-hover)] hover:text-[var(--app-text-secondary)] active:cursor-grabbing"
+      class="song-item__drag"
       aria-label="Reordenar canción"
       (click)="stopDragClick($event)"
     >
@@ -20,18 +18,14 @@
     </button>
   }
 
-  <img
-    [src]="song.cover"
-    [alt]="song.title"
-    class="h-12 w-12 shrink-0 rounded-md bg-[var(--app-image-bg)] object-cover"
-  />
+  <img [src]="song.cover" [alt]="song.title" class="song-item__cover" />
 
-  <div class="min-w-0 flex-1">
-    <p class="truncate text-sm font-medium text-[var(--app-text)]">{{ song.title }}</p>
-    <p class="truncate text-xs text-[var(--app-text-muted)]">{{ song.artist }}</p>
+  <div class="song-item__info">
+    <p class="song-item__title">{{ song.title }}</p>
+    <p class="song-item__artist">{{ song.artist }}</p>
   </div>
 
-  <span class="hidden text-xs text-[var(--app-text-subtle)] sm:inline">{{ durationLabel }}</span>
+  <span class="song-item__duration">{{ durationLabel }}</span>
 
   <p-button
     type="button"
@@ -39,6 +33,7 @@
     [rounded]="true"
     [text]="true"
     severity="secondary"
+    styleClass="song-item__action song-item__action--play"
     ariaLabel="Reproducir canción"
     (onClick)="handlePlay($event)"
   />
@@ -49,6 +44,7 @@
     [rounded]="true"
     [text]="true"
     severity="secondary"
+    styleClass="song-item__action"
     ariaLabel="Opciones de canción"
     (onClick)="openMenu($event)"
   />

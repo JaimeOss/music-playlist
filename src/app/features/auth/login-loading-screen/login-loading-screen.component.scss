@@ -1,0 +1,142 @@
+.login-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 450ms ease;
+}
+
+.login-loading--leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.login-loading__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.login-loading__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgb(15 23 42 / 62%) 0%,
+    rgb(15 23 42 / 82%) 100%
+  );
+}
+
+.login-loading__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.75rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.login-loading__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.login-loading__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 1rem;
+  background: var(--app-primary-muted);
+  color: var(--app-primary-text);
+  box-shadow: 0 0 0 1px var(--app-primary-ring);
+  animation: login-loading-pulse 2s ease-in-out infinite;
+}
+
+.login-loading__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.login-loading__equalizer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.3rem;
+  height: 2rem;
+}
+
+.login-loading__bar {
+  width: 0.3rem;
+  border-radius: 9999px;
+  background: var(--app-primary-light);
+  animation: login-loading-bar 1s ease-in-out infinite;
+}
+
+.login-loading__bar:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.login-loading__bar:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.login-loading__bar:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.login-loading__bar:nth-child(4) {
+  animation-delay: 0.15s;
+}
+
+.login-loading__bar:nth-child(5) {
+  animation-delay: 0s;
+}
+
+.login-loading__message {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 72%);
+}
+
+@keyframes login-loading-bar {
+  0%,
+  100% {
+    height: 0.45rem;
+    opacity: 0.45;
+  }
+
+  50% {
+    height: 1.75rem;
+    opacity: 1;
+  }
+}
+
+@keyframes login-loading-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 1px var(--app-primary-ring);
+  }
+
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 0 24px var(--app-primary-ring);
+  }
+}

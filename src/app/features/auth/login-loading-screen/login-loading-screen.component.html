@@ -1,0 +1,34 @@
+<div
+  class="login-loading"
+  [class.login-loading--leaving]="isLeaving"
+  role="status"
+  aria-live="polite"
+  aria-label="Iniciando sesión"
+>
+  <img src="/images/cover.png" alt="" class="login-loading__bg" aria-hidden="true" />
+  <div class="login-loading__overlay" aria-hidden="true"></div>
+
+  <div class="login-loading__content">
+    <div class="login-loading__brand">
+      <div class="login-loading__logo" aria-hidden="true">
+        <svg viewBox="0 0 32 32" class="h-10 w-10">
+          <path
+            fill="currentColor"
+            d="M20 4v12.42a4.5 4.5 0 1 1-2.5-4.04V8.5H11v8.38a4.5 4.5 0 1 1-2.5-4.04V4h11.5z"
+          />
+        </svg>
+      </div>
+      <p class="login-loading__title">MusicPlaylist</p>
+    </div>
+
+    <div class="login-loading__equalizer" aria-hidden="true">
+      <span class="login-loading__bar"></span>
+      <span class="login-loading__bar"></span>
+      <span class="login-loading__bar"></span>
+      <span class="login-loading__bar"></span>
+      <span class="login-loading__bar"></span>
+    </div>
+
+    <p class="login-loading__message">Iniciando sesión...</p>
+  </div>
+</div>

@@ -1,0 +1,40 @@
+.playlist-cover {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--app-image-bg);
+}
+
+.playlist-cover--hover-scale {
+  transition: transform 0.2s ease;
+}
+
+.group:hover .playlist-cover--hover-scale {
+  transform: scale(1.05);
+}
+
+.playlist-cover__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.playlist-cover__grid {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  gap: 0.125rem;
+}
+
+.playlist-cover__grid--cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.playlist-cover__grid--2x2 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.playlist-cover__image--span-rows {
+  grid-row: span 2;
+}

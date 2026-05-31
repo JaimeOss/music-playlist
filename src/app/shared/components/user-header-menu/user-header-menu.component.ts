@@ -10,6 +10,7 @@ import { ThemeService } from '../../../core/services/theme.service';
   standalone: true,
   imports: [Button, Menu, Ripple],
   templateUrl: './user-header-menu.component.html',
+  styleUrl: './user-header-menu.component.scss',
 })
 export class UserHeaderMenuComponent {
   @Input({ required: true }) menuTriggerClass = '';

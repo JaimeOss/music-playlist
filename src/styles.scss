@@ -4,6 +4,12 @@
 :root,
 [data-theme='dark'] {
   color-scheme: dark;
+  --app-primary: #2563eb;
+  --app-primary-hover: #1d4ed8;
+  --app-primary-light: #3b82f6;
+  --app-primary-text: #60a5fa;
+  --app-primary-muted: rgb(37 99 235 / 20%);
+  --app-primary-ring: rgb(37 99 235 / 35%);
   --app-bg: #0f0f0f;
   --app-bg-elevated: #171717;
   --app-bg-subtle: rgb(24 24 27 / 30%);
@@ -33,6 +39,8 @@
   --app-drag-placeholder-bg: #27272a;
   --app-login-main-bg: #0f0f0f;
   --app-login-hero-bg: #0a0a0a;
+  --app-login-panel-bg: rgb(15 15 15 / 72%);
+  --app-login-panel-border: rgb(255 255 255 / 12%);
   --app-demo-box-bg: rgb(24 24 27 / 60%);
   --app-demo-box-border: #27272a;
   --app-shadow-card: rgb(23 37 84 / 30%);
@@ -44,6 +52,12 @@
 
 [data-theme='light'] {
   color-scheme: light;
+  --app-primary: #2563eb;
+  --app-primary-hover: #1d4ed8;
+  --app-primary-light: #3b82f6;
+  --app-primary-text: #2563eb;
+  --app-primary-muted: rgb(37 99 235 / 12%);
+  --app-primary-ring: rgb(37 99 235 / 25%);
   --app-bg: #f4f4f5;
   --app-bg-elevated: #ffffff;
   --app-bg-subtle: rgb(255 255 255 / 80%);
@@ -73,6 +87,8 @@
   --app-drag-placeholder-bg: #e4e4e7;
   --app-login-main-bg: #ffffff;
   --app-login-hero-bg: #fafafa;
+  --app-login-panel-bg: rgb(255 255 255 / 78%);
+  --app-login-panel-border: rgb(255 255 255 / 55%);
   --app-demo-box-bg: rgb(244 244 245 / 90%);
   --app-demo-box-border: #e4e4e7;
   --app-shadow-card: rgb(0 0 0 / 8%);
@@ -82,7 +98,53 @@
   --app-volume-track: #e4e4e7;
 }
 
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition-property: background-color, color, border-color, box-shadow, fill, stroke, outline-color;
+  transition-duration: 0.35s;
+  transition-timing-function: ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-transition,
+  html.theme-transition *,
+  html.theme-transition *::before,
+  html.theme-transition *::after {
+    transition: none !important;
+  }
+}
+
 body {
   background-color: var(--app-bg);
   color: var(--app-text);
+}
+
+.p-progressspinner-circle {
+  stroke: var(--app-primary) !important;
+}
+
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-danger):not(
+    .p-button-warn
+  ):not(.p-button-success):not(.p-button-info):not(.p-button-help):not(.p-button-contrast) {
+  background: var(--app-primary);
+  border-color: var(--app-primary);
+}
+
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-danger):not(
+    .p-button-warn
+  ):not(.p-button-success):not(.p-button-info):not(.p-button-help):not(.p-button-contrast):enabled:hover {
+  background: var(--app-primary-hover);
+  border-color: var(--app-primary-hover);
+}
+
+.p-button.p-button-danger:not(.p-button-text):not(.p-button-outlined) {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+.p-button.p-button-danger:not(.p-button-text):not(.p-button-outlined):enabled:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
 }

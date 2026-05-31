@@ -1,6 +1,7 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { PlaybackService } from '../../../core/services/playback.service';
-import { Playlist } from '../../../core/models/playlist.model';import { formatTotalDuration } from '../../../core/utils/format-duration.util';
+import { Playlist } from '../../../core/models/playlist.model';
+import { formatTotalDuration } from '../../../core/utils/format-duration.util';
 import { PlaylistCoverComponent } from '../playlist-cover/playlist-cover.component';
 
 @Component({
@@ -8,6 +9,7 @@ import { PlaylistCoverComponent } from '../playlist-cover/playlist-cover.compone
   standalone: true,
   imports: [PlaylistCoverComponent],
   templateUrl: './playlist-card.component.html',
+  styleUrl: './playlist-card.component.scss',
 })
 export class PlaylistCardComponent {
   @Input({ required: true }) playlist!: Playlist;

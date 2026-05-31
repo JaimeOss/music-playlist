@@ -11,6 +11,7 @@ import { formatDuration } from '../../../core/utils/format-duration.util';
   standalone: true,
   imports: [CdkDragHandle, Button, Menu],
   templateUrl: './song-item.component.html',
+  styleUrl: './song-item.component.scss',
 })
 export class SongItemComponent {
   @ViewChild('songMenu') songMenu!: Menu;
