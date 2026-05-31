@@ -6,13 +6,6 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  opacity: 1;
-  transition: opacity 450ms ease;
-}
-
-.login-loading--leaving {
-  opacity: 0;
-  pointer-events: none;
 }
 
 .login-loading__bg {

@@ -32,9 +32,8 @@ export class LoginComponent {
   });
 
   onLoadingFinished(): void {
-    this.showLoadingScreen = false;
-
     if (!this.pendingLogin) {
+      this.showLoadingScreen = false;
       return;
     }
 
@@ -42,10 +41,12 @@ export class LoginComponent {
     this.pendingLogin = null;
 
     if (this.authService.login(email, password)) {
+      // Mantener la pantalla de carga hasta que el router destruya este componente.
       this.router.navigate(['/home']);
       return;
     }
 
+    this.showLoadingScreen = false;
     this.authError = true;
   }
 
