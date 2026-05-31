@@ -6,7 +6,7 @@ Aplicación web para crear y administrar listas de reproducción de música. Des
 
 | Recurso | URL |
 |---------|-----|
-| **Demo en vivo** | _Pendiente: añade aquí la URL de Netlify tras el primer deploy_ |
+| **Demo en vivo** | https://jaime-music-playlist.netlify.app |
 | **Repositorio** | https://github.com/JaimeOss/music-playlist |
 
 ## Credenciales de prueba
@@ -60,7 +60,7 @@ El proyecto incluye [`netlify.toml`](./netlify.toml) con la configuración neces
    - **Build command:** `npm run build`
    - **Publish directory:** `dist/music-playlist/browser`
 5. Pulsa **Deploy site**.
-6. Cuando termine, copia la URL (ej. `https://music-playlist-xxxxx.netlify.app`) y actualiza la tabla **Demo en vivo** de este README.
+6. La demo publicada está en: https://jaime-music-playlist.netlify.app
 
 ### Opción B — Deploy manual (CLI)
 
