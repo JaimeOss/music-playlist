@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { CdkDragHandle } from '@angular/cdk/drag-drop';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MenuItemCommandEvent } from 'primeng/api';
 import { Button } from 'primeng/button';
 import { Menu } from 'primeng/menu';
 import { Song } from '../../../core/models/song.model';
@@ -26,7 +26,7 @@ export class SongItemComponent {
     {
       label: 'Eliminar',
       icon: 'pi pi-trash',
-      command: () => this.onDelete.emit(this.song),
+      command: (event: MenuItemCommandEvent) => this.handleDelete(event),
     },
   ];
 
@@ -36,6 +36,13 @@ export class SongItemComponent {
 
   get playIcon(): string {
     return this.isPlaying ? 'pi pi-pause' : 'pi pi-play';
+  }
+
+  handleDelete(event: MenuItemCommandEvent): void {
+    event.originalEvent?.preventDefault();
+    event.originalEvent?.stopPropagation();
+    event.originalEvent?.stopImmediatePropagation?.();
+    this.onDelete.emit(this.song);
   }
 
   handlePlay(event: Event): void {

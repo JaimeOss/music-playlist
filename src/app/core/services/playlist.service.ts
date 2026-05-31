@@ -44,10 +44,6 @@ export class PlaylistService {
     this.saveToStorage(playlists);
   }
 
-  updatePlaylistsOrder(playlists: Playlist[]): void {
-    this.saveToStorage(playlists);
-  }
-
   addSong(playlistId: string, song: Song): void {
     const playlists = this.getPlaylists();
     const playlist = playlists.find((item) => item.id === playlistId);
@@ -61,7 +57,6 @@ export class PlaylistService {
     }
 
     playlist.songs.push(song);
-    this.syncCover(playlist);
     this.saveToStorage(playlists);
   }
 
@@ -74,7 +69,6 @@ export class PlaylistService {
     }
 
     playlist.songs = playlist.songs.filter((song) => song.id !== songId);
-    this.syncCover(playlist);
     this.saveToStorage(playlists);
   }
 
@@ -87,7 +81,6 @@ export class PlaylistService {
     }
 
     playlist.songs = songs;
-    this.syncCover(playlist);
     this.saveToStorage(playlists);
   }
 
@@ -104,18 +97,14 @@ export class PlaylistService {
 
     try {
       const parsed = JSON.parse(raw) as Array<Omit<Playlist, 'createdAt'> & { createdAt: string }>;
-      return parsed.map((playlist) => {
-        const mapped: Playlist = {
-          ...playlist,
-          songs: playlist.songs.map((song) => ({
-            ...song,
-            cover: toHighResArtworkUrl(song.cover),
-          })),
-          createdAt: new Date(playlist.createdAt),
-        };
-        this.syncCover(mapped);
-        return mapped;
-      });
+      return parsed.map((playlist) => ({
+        ...playlist,
+        songs: playlist.songs.map((song) => ({
+          ...song,
+          cover: toHighResArtworkUrl(song.cover),
+        })),
+        createdAt: new Date(playlist.createdAt),
+      }));
     } catch {
       localStorage.removeItem(STORAGE_KEY);
       return [];
@@ -168,14 +157,6 @@ export class PlaylistService {
         songs: chillSongs,
         createdAt: new Date('2025-02-20'),
       },
-    ].map((playlist) => {
-      this.syncCover(playlist);
-      return playlist;
-    });
-  }
-
-  private syncCover(playlist: Playlist): void {
-    playlist.cover =
-      playlist.songs.length > 0 ? playlist.songs[0].cover : DEFAULT_COVER;
+    ];
   }
 }

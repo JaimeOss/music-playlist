@@ -7,6 +7,8 @@
 :host ::ng-deep .detail-action-btn.p-button {
   background-color: #2563eb;
   border-color: #2563eb;
+  border-radius: 0.5rem;
+  padding-inline: 1rem;
 }
 
 :host ::ng-deep .detail-action-btn.p-button:enabled:hover {
@@ -14,21 +16,31 @@
   border-color: #1d4ed8;
 }
 
+:host ::ng-deep .detail-delete-btn.p-button {
+  background-color: #dc2626;
+  border-color: #dc2626;
+}
+
+:host ::ng-deep .detail-delete-btn.p-button:enabled:hover {
+  background-color: #b91c1c;
+  border-color: #b91c1c;
+}
+
 :host ::ng-deep .detail-back-btn.p-button,
 :host ::ng-deep .detail-menu-trigger.p-button {
-  color: #a1a1aa;
+  color: var(--app-menu-trigger-color);
 }
 
 :host ::ng-deep .detail-back-btn.p-button:enabled:hover,
 :host ::ng-deep .detail-menu-trigger.p-button:enabled:hover {
-  color: #fff;
-  background-color: #27272a;
+  color: var(--app-menu-trigger-hover-color);
+  background-color: var(--app-menu-trigger-hover-bg);
 }
 
 :host ::ng-deep .detail-dialog-input.p-inputtext {
-  background-color: #171717;
-  border-color: #3f3f46;
-  color: #fafafa;
+  background-color: var(--app-input-bg);
+  border-color: var(--app-input-border);
+  color: var(--app-input-text);
 }
 
 :host ::ng-deep .detail-dialog-input.p-inputtext:enabled:focus {
@@ -42,11 +54,11 @@
 
 .song-drag-item.cdk-drag-preview {
   border-radius: 0.75rem;
-  background: #18181b;
-  box-shadow: 0 12px 28px rgb(0 0 0 / 45%);
+  background: var(--app-drag-preview-bg);
+  box-shadow: 0 12px 28px rgb(0 0 0 / 20%);
 }
 
 .song-drag-item.cdk-drag-placeholder {
   opacity: 0.35;
-  background: #27272a;
+  background: var(--app-drag-placeholder-bg);
 }

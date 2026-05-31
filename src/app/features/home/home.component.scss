@@ -15,37 +15,21 @@
 }
 
 :host ::ng-deep .home-menu-trigger.p-button {
-  color: #a1a1aa;
+  color: var(--app-menu-trigger-color);
 }
 
 :host ::ng-deep .home-menu-trigger.p-button:enabled:hover {
-  color: #fff;
-  background-color: #27272a;
+  color: var(--app-menu-trigger-hover-color);
+  background-color: var(--app-menu-trigger-hover-bg);
 }
 
 :host ::ng-deep .home-dialog-input.p-inputtext {
-  background-color: #171717;
-  border-color: #3f3f46;
-  color: #fafafa;
+  background-color: var(--app-input-bg);
+  border-color: var(--app-input-border);
+  color: var(--app-input-text);
 }
 
 :host ::ng-deep .home-dialog-input.p-inputtext:enabled:focus {
   border-color: #2563eb;
   box-shadow: 0 0 0 1px #2563eb;
-}
-
-.playlist-drop-list.cdk-drop-list-dragging .playlist-drag-item:not(.cdk-drag-placeholder) {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-}
-
-.playlist-drag-item.cdk-drag-preview {
-  border-radius: 0.75rem;
-  background: #18181b;
-  box-shadow: 0 12px 28px rgb(0 0 0 / 45%);
-}
-
-.playlist-drag-item.cdk-drag-placeholder {
-  opacity: 0.35;
-  background: #27272a;
-  border-radius: 0.75rem;
 }

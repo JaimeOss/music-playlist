@@ -7,3 +7,115 @@
   background-color: #1d4ed8;
   border-color: #1d4ed8;
 }
+
+:host ::ng-deep .player-nav-btn.p-button {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--app-text-secondary);
+}
+
+:host ::ng-deep .player-nav-btn.p-button:enabled:hover {
+  background-color: var(--app-hover);
+  border-color: var(--app-hover);
+  color: var(--app-text);
+}
+
+:host ::ng-deep .player-nav-btn.p-button:disabled {
+  opacity: 0.35;
+}
+
+.player-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--app-menu-trigger-color);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.player-mode-btn:hover {
+  background-color: var(--app-hover);
+  color: var(--app-text);
+}
+
+.player-mode-btn--active {
+  color: #60a5fa;
+}
+
+.player-mode-btn--active:hover {
+  color: #93c5fd;
+}
+
+.volume-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--app-menu-trigger-color);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.volume-btn:hover {
+  background-color: var(--app-hover);
+  color: var(--app-text);
+}
+
+.volume-slider {
+  width: 5rem;
+  height: 0.25rem;
+  appearance: none;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    #3b82f6 0%,
+    #3b82f6 var(--volume-percent, 100%),
+    var(--app-volume-track) var(--volume-percent, 100%),
+    var(--app-volume-track) 100%
+  );
+  cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-runnable-track {
+  height: 0.25rem;
+  border-radius: 9999px;
+  background: transparent;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-top: -0.25rem;
+  border: none;
+  border-radius: 9999px;
+  background: #ffffff;
+  box-shadow: 0 0 0 2px #3b82f6;
+  cursor: pointer;
+}
+
+.volume-slider::-moz-range-track {
+  height: 0.25rem;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 0.75rem;
+  height: 0.75rem;
+  border: none;
+  border-radius: 9999px;
+  background: #ffffff;
+  box-shadow: 0 0 0 2px #3b82f6;
+  cursor: pointer;
+}

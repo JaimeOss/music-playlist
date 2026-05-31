@@ -1,0 +1,32 @@
+<div class="relative flex items-center">
+  <p-button
+    type="button"
+    icon="pi pi-ellipsis-v"
+    [rounded]="true"
+    [text]="true"
+    severity="secondary"
+    [styleClass]="menuTriggerClass"
+    ariaLabel="Menú de usuario"
+    (onClick)="openUserMenu($event)"
+  />
+  <p-menu #userMenu [model]="menuItems" [popup]="true" appendTo="body">
+    <ng-template #item let-item>
+      @if (item.id === 'theme') {
+        <a class="p-menu-item-link" tabindex="-1" pRipple (click)="onThemeClick($event)">
+          @if (themeService.theme() === 'dark') {
+            <span class="p-menu-item-icon pi pi-sun" data-pc-section="itemicon"></span>
+            <span class="p-menu-item-label" data-pc-section="itemlabel">Tema claro</span>
+          } @else {
+            <span class="p-menu-item-icon pi pi-moon" data-pc-section="itemicon"></span>
+            <span class="p-menu-item-label" data-pc-section="itemlabel">Tema oscuro</span>
+          }
+        </a>
+      } @else {
+        <a class="p-menu-item-link" tabindex="-1" pRipple>
+          <span [class]="'p-menu-item-icon ' + item.icon" data-pc-section="itemicon"></span>
+          <span class="p-menu-item-label" data-pc-section="itemlabel">{{ item.label }}</span>
+        </a>
+      }
+    </ng-template>
+  </p-menu>
+</div>

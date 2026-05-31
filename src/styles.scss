@@ -1,2 +1,88 @@
 @use "tailwindcss";
 @import "primeicons/primeicons.css";
+
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+  --app-bg: #0f0f0f;
+  --app-bg-elevated: #171717;
+  --app-bg-subtle: rgb(24 24 27 / 30%);
+  --app-bg-hover: rgb(24 24 27 / 60%);
+  --app-bg-card: rgb(24 24 27 / 40%);
+  --app-bg-card-hover: rgb(39 39 42 / 60%);
+  --app-header-bg: rgb(15 15 15 / 95%);
+  --app-text: #ffffff;
+  --app-text-secondary: #d4d4d8;
+  --app-text-muted: #a1a1aa;
+  --app-text-subtle: #71717a;
+  --app-border: #27272a;
+  --app-border-dashed: #3f3f46;
+  --app-input-bg: #171717;
+  --app-input-border: #3f3f46;
+  --app-input-text: #fafafa;
+  --app-player-bg: rgb(9 9 11 / 95%);
+  --app-surface: #18181b;
+  --app-surface-muted: #27272a;
+  --app-hover: #27272a;
+  --app-image-bg: #27272a;
+  --app-menu-trigger-color: #a1a1aa;
+  --app-menu-trigger-hover-bg: #27272a;
+  --app-menu-trigger-hover-color: #ffffff;
+  --app-selected-bg: rgb(23 37 84 / 25%);
+  --app-drag-preview-bg: #18181b;
+  --app-drag-placeholder-bg: #27272a;
+  --app-login-main-bg: #0f0f0f;
+  --app-login-hero-bg: #0a0a0a;
+  --app-demo-box-bg: rgb(24 24 27 / 60%);
+  --app-demo-box-border: #27272a;
+  --app-shadow-card: rgb(23 37 84 / 30%);
+  --app-search-item-hover: #27272a;
+  --app-search-item-disabled: rgb(39 39 42 / 40%);
+  --app-progress-track: #27272a;
+  --app-volume-track: #27272a;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+  --app-bg: #f4f4f5;
+  --app-bg-elevated: #ffffff;
+  --app-bg-subtle: rgb(255 255 255 / 80%);
+  --app-bg-hover: rgb(228 228 231 / 70%);
+  --app-bg-card: #ffffff;
+  --app-bg-card-hover: #f4f4f5;
+  --app-header-bg: rgb(255 255 255 / 95%);
+  --app-text: #18181b;
+  --app-text-secondary: #52525b;
+  --app-text-muted: #71717a;
+  --app-text-subtle: #a1a1aa;
+  --app-border: #e4e4e7;
+  --app-border-dashed: #d4d4d8;
+  --app-input-bg: #ffffff;
+  --app-input-border: #d4d4d8;
+  --app-input-text: #18181b;
+  --app-player-bg: rgb(255 255 255 / 95%);
+  --app-surface: #ffffff;
+  --app-surface-muted: #f4f4f5;
+  --app-hover: #e4e4e7;
+  --app-image-bg: #e4e4e7;
+  --app-menu-trigger-color: #71717a;
+  --app-menu-trigger-hover-bg: #f4f4f5;
+  --app-menu-trigger-hover-color: #18181b;
+  --app-selected-bg: rgb(219 234 254 / 80%);
+  --app-drag-preview-bg: #ffffff;
+  --app-drag-placeholder-bg: #e4e4e7;
+  --app-login-main-bg: #ffffff;
+  --app-login-hero-bg: #fafafa;
+  --app-demo-box-bg: rgb(244 244 245 / 90%);
+  --app-demo-box-border: #e4e4e7;
+  --app-shadow-card: rgb(0 0 0 / 8%);
+  --app-search-item-hover: #f4f4f5;
+  --app-search-item-disabled: rgb(244 244 245 / 90%);
+  --app-progress-track: #e4e4e7;
+  --app-volume-track: #e4e4e7;
+}
+
+body {
+  background-color: var(--app-bg);
+  color: var(--app-text);
+}

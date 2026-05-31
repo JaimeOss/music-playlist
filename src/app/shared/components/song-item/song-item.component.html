@@ -3,8 +3,8 @@
   tabindex="0"
   (click)="handleRowClick()"
   (keydown.enter)="handleRowClick()"
-  class="flex cursor-pointer items-center gap-3 border-b border-zinc-800/80 px-2 py-3 transition hover:bg-zinc-900/60"
-  [class.bg-blue-950/25]="isSelected"
+  class="flex cursor-pointer items-center gap-3 border-b border-[var(--app-border)] px-2 py-3 transition hover:bg-[var(--app-bg-hover)]"
+  [class.bg-[var(--app-selected-bg)]]="isSelected"
   [class.border-l-2]="isSelected"
   [class.border-l-blue-500]="isSelected"
 >
@@ -12,7 +12,7 @@
     <button
       type="button"
       cdkDragHandle
-      class="flex h-10 w-8 shrink-0 cursor-grab items-center justify-center rounded-md text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-300 active:cursor-grabbing"
+      class="flex h-10 w-8 shrink-0 cursor-grab items-center justify-center rounded-md text-[var(--app-text-subtle)] transition hover:bg-[var(--app-hover)] hover:text-[var(--app-text-secondary)] active:cursor-grabbing"
       aria-label="Reordenar canción"
       (click)="stopDragClick($event)"
     >
@@ -23,15 +23,15 @@
   <img
     [src]="song.cover"
     [alt]="song.title"
-    class="h-12 w-12 shrink-0 rounded-md bg-zinc-800 object-cover"
+    class="h-12 w-12 shrink-0 rounded-md bg-[var(--app-image-bg)] object-cover"
   />
 
   <div class="min-w-0 flex-1">
-    <p class="truncate text-sm font-medium text-white">{{ song.title }}</p>
-    <p class="truncate text-xs text-zinc-400">{{ song.artist }}</p>
+    <p class="truncate text-sm font-medium text-[var(--app-text)]">{{ song.title }}</p>
+    <p class="truncate text-xs text-[var(--app-text-muted)]">{{ song.artist }}</p>
   </div>
 
-  <span class="hidden text-xs text-zinc-500 sm:inline">{{ durationLabel }}</span>
+  <span class="hidden text-xs text-[var(--app-text-subtle)] sm:inline">{{ durationLabel }}</span>
 
   <p-button
     type="button"
@@ -52,5 +52,5 @@
     ariaLabel="Opciones de canción"
     (onClick)="openMenu($event)"
   />
-  <p-menu #songMenu [model]="menuItems" [popup]="true" />
+  <p-menu #songMenu [model]="menuItems" [popup]="true" appendTo="body" />
 </div>

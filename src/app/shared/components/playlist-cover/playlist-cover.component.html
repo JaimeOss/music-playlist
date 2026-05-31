@@ -1,0 +1,30 @@
+<div
+  class="h-full w-full overflow-hidden bg-[var(--app-image-bg)]"
+  [class.group-hover:scale-105]="hoverScale"
+  [class.transition]="hoverScale"
+  [class.duration-200]="hoverScale"
+>
+  @if (covers.length === 0) {
+    <img [src]="defaultCover" [alt]="alt" class="h-full w-full object-cover" />
+  } @else if (covers.length === 1) {
+    <img [src]="covers[0]" [alt]="alt" class="h-full w-full object-cover" />
+  } @else if (covers.length === 2) {
+    <div class="grid h-full w-full grid-cols-2 gap-0.5">
+      @for (cover of covers; track cover) {
+        <img [src]="cover" [alt]="alt" class="h-full w-full object-cover" />
+      }
+    </div>
+  } @else if (covers.length === 3) {
+    <div class="grid h-full w-full grid-cols-2 grid-rows-2 gap-0.5">
+      <img [src]="covers[0]" [alt]="alt" class="row-span-2 h-full w-full object-cover" />
+      <img [src]="covers[1]" [alt]="alt" class="h-full w-full object-cover" />
+      <img [src]="covers[2]" [alt]="alt" class="h-full w-full object-cover" />
+    </div>
+  } @else {
+    <div class="grid h-full w-full grid-cols-2 grid-rows-2 gap-0.5">
+      @for (cover of covers; track cover) {
+        <img [src]="cover" [alt]="alt" class="h-full w-full object-cover" />
+      }
+    </div>
+  }
+</div>

@@ -19,12 +19,14 @@ import { Menu } from 'primeng/menu';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { AuthService } from '../../core/services/auth.service';
 import { ItunesService } from '../../core/services/itunes.service';
+import { PlaybackService } from '../../core/services/playback.service';
 import { PlaylistService } from '../../core/services/playlist.service';
 import { Playlist } from '../../core/models/playlist.model';
 import { Song } from '../../core/models/song.model';
 import { formatDuration, formatTotalDuration } from '../../core/utils/format-duration.util';
 import { SongItemComponent } from '../../shared/components/song-item/song-item.component';
-import { AudioPlayerComponent } from '../../shared/components/audio-player/audio-player.component';
+import { PlaylistCoverComponent } from '../../shared/components/playlist-cover/playlist-cover.component';
+import { UserHeaderMenuComponent } from '../../shared/components/user-header-menu/user-header-menu.component';
 
 @Component({
   selector: 'app-playlist-detail',
@@ -39,19 +41,20 @@ import { AudioPlayerComponent } from '../../shared/components/audio-player/audio
     Menu,
     ProgressSpinner,
     SongItemComponent,
-    AudioPlayerComponent,
+    PlaylistCoverComponent,
+    UserHeaderMenuComponent,
   ],
   templateUrl: './playlist-detail.component.html',
   styleUrl: './playlist-detail.component.scss',
 })
 export class PlaylistDetailComponent implements OnInit {
-  @ViewChild('userMenu') userMenu!: Menu;
-  @ViewChild(AudioPlayerComponent) audioPlayer!: AudioPlayerComponent;
+  @ViewChild('playlistMenu') playlistMenu!: Menu;
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   private readonly playlistService = inject(PlaylistService);
+  readonly playback = inject(PlaybackService);
   private readonly itunesService = inject(ItunesService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -59,20 +62,22 @@ export class PlaylistDetailComponent implements OnInit {
   playlist: Playlist | null = null;
   playlistId = '';
 
-  currentSong: Song | null = null;
-  isPlayerPlaying = false;
+  private readonly blockedPlaySongIds = new Set<string>();
 
   searchDialogVisible = false;
+  deleteDialogVisible = false;
+  deleteSongDialogVisible = false;
+  songToDelete: Song | null = null;
   searchControl = new FormControl('', { nonNullable: true });
   searchResults: Song[] = [];
   isSearching = false;
   searchError = false;
 
-  readonly menuItems: MenuItem[] = [
+  readonly playlistMenuItems: MenuItem[] = [
     {
-      label: 'Cerrar sesión',
-      icon: 'pi pi-sign-out',
-      command: () => this.logout(),
+      label: 'Eliminar playlist',
+      icon: 'pi pi-trash',
+      command: () => this.openDeleteDialog(),
     },
   ];
 
@@ -159,11 +164,27 @@ export class PlaylistDetailComponent implements OnInit {
     this.router.navigate(['/home']);
   }
 
-  openUserMenu(event: Event): void {
-    this.userMenu.toggle(event);
+  openPlaylistMenu(event: Event): void {
+    this.playlistMenu.toggle(event);
+  }
+
+  openDeleteDialog(): void {
+    this.deleteDialogVisible = true;
+  }
+
+  deletePlaylist(): void {
+    if (!this.playlist) {
+      return;
+    }
+
+    this.playback.closeIfPlaylist(this.playlistId);
+    this.playlistService.deletePlaylist(this.playlistId);
+    this.deleteDialogVisible = false;
+    this.router.navigate(['/home']);
   }
 
   logout(): void {
+    this.playback.clearOnLogout();
     this.authService.logout();
     this.router.navigate(['/login']);
   }
@@ -176,53 +197,68 @@ export class PlaylistDetailComponent implements OnInit {
   }
 
   addSong(song: Song): void {
+    if (this.isSongInPlaylist(song.id)) {
+      return;
+    }
+
     this.playlistService.addSong(this.playlistId, song);
     this.loadPlaylist();
     this.searchDialogVisible = false;
 
     const added = this.playlist?.songs.find((item) => item.id === song.id);
     if (added) {
-      this.selectAndPlay(added);
+      this.playback.setPlaylistContext(this.playlistId, this.playlist!.name);
+      this.playback.selectAndPlay(added);
     }
   }
 
   removeSong(song: Song): void {
+    this.blockedPlaySongIds.add(song.id);
+    this.playback.handleSongRemoved(this.playlistId, song.id);
     this.playlistService.removeSong(this.playlistId, song.id);
-
-    if (this.currentSong?.id === song.id) {
-      this.currentSong = null;
-      this.isPlayerPlaying = false;
-    }
-
     this.loadPlaylist();
     this.cdr.markForCheck();
+
+    queueMicrotask(() => this.blockedPlaySongIds.delete(song.id));
   }
 
-  onPlaySong(song: Song): void {
-    if (this.currentSong?.id === song.id) {
-      this.audioPlayer.toggle();
+  openDeleteSongDialog(song: Song): void {
+    this.songToDelete = song;
+    this.deleteSongDialogVisible = true;
+  }
+
+  confirmDeleteSong(): void {
+    if (!this.songToDelete) {
       return;
     }
 
-    this.selectAndPlay(song);
+    this.removeSong(this.songToDelete);
+    this.songToDelete = null;
+    this.deleteSongDialogVisible = false;
   }
 
-  isSongSelected(songId: string): boolean {
-    return this.currentSong?.id === songId;
+  cancelDeleteSong(): void {
+    this.songToDelete = null;
+    this.deleteSongDialogVisible = false;
   }
 
-  isSongPlaying(songId: string): boolean {
-    return this.isPlayerPlaying && this.currentSong?.id === songId;
+  onPlaySong(song: Song): void {
+    if (this.blockedPlaySongIds.has(song.id) || !this.isSongInPlaylist(song.id)) {
+      return;
+    }
+
+    this.playback.setPlaylistContext(this.playlistId, this.playlist!.name);
+
+    if (this.playback.isSongSelected(this.playlistId, song.id)) {
+      this.playback.toggleCurrentSong();
+      return;
+    }
+
+    this.playback.selectAndPlay(song);
   }
 
-  onPlayingChange(isPlaying: boolean): void {
-    this.isPlayerPlaying = isPlaying;
-    this.cdr.markForCheck();
-  }
-
-  private selectAndPlay(song: Song): void {
-    this.currentSong = song;
-    queueMicrotask(() => this.audioPlayer.play());
+  isSongInPlaylist(songId: string): boolean {
+    return this.playlist?.songs.some((item) => item.id === songId) ?? false;
   }
 
   onSongDrop(event: CdkDragDrop<Song[]>): void {
