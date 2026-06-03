@@ -48,7 +48,7 @@
   position: fixed;
   inset-inline: 0;
   bottom: 0;
-  z-index: 20;
+  z-index: var(--app-z-player, 1300);
   border-top: 1px solid var(--app-border);
   background-color: var(--app-player-bg);
   padding: 0.75rem;

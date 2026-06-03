@@ -69,20 +69,9 @@
   </form>
 </p-dialog>
 
-<p-dialog
-  [header]="detailDialogHeader()"
+<app-playlist-detail-modal
   [(visible)]="detailDialogVisible"
-  [modal]="true"
-  [draggable]="false"
-  [style]="{ width: 'min(52rem, calc(100vw - 2rem))' }"
-  styleClass="home-detail-dialog"
-  (onHide)="onDetailClosed()"
->
-  @if (selectedPlaylistId(); as playlistId) {
-    <app-playlist-detail
-      [playlistId]="playlistId"
-      (closed)="onDetailClosed()"
-      (playlistsChanged)="onPlaylistsChanged()"
-    />
-  }
-</p-dialog>
+  [playlistId]="selectedPlaylistId()"
+  (closed)="onDetailClosed()"
+  (playlistsChanged)="onPlaylistsChanged()"
+/>

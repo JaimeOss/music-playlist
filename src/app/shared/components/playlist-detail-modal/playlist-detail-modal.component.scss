@@ -1,0 +1,4 @@
+:host ::ng-deep .playlist-detail-modal .p-dialog-content {
+  overflow-y: auto;
+  max-height: min(70vh, 40rem);
+}

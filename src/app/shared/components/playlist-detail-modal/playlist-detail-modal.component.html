@@ -1,0 +1,17 @@
+<p-dialog
+  [header]="dialogHeader()"
+  [(visible)]="visible"
+  [modal]="true"
+  [draggable]="false"
+  [style]="{ width: 'min(52rem, calc(100vw - 2rem))' }"
+  styleClass="playlist-detail-modal"
+  (onHide)="onDialogHide()"
+>
+  @if (playlistId(); as id) {
+    <app-playlist-detail-panel
+      [playlistId]="id"
+      (closed)="onPanelClosed()"
+      (playlistsChanged)="playlistsChanged.emit()"
+    />
+  }
+</p-dialog>

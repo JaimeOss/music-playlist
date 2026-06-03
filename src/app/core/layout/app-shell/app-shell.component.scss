@@ -8,7 +8,7 @@
 .shell__sidebar {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: var(--app-z-shell, 20);
   display: flex;
   flex-shrink: 0;
   flex-direction: column;

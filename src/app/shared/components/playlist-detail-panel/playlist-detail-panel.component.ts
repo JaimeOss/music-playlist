@@ -25,21 +25,22 @@ import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Menu } from 'primeng/menu';
 import { ProgressSpinner } from 'primeng/progressspinner';
-import { SearchSettingsService } from '../../core/services/search-settings.service';
-import { SongSearchService } from '../../core/services/song-search.service';
-import { PlaybackService } from '../../core/services/playback.service';
-import { PlaylistService } from '../../core/services/playlist.service';
-import { Playlist } from '../../core/models/playlist.model';
-import { SongSearchSource } from '../../core/models/song-search.model';
-import { Song } from '../../core/models/song.model';
-import { formatDuration, formatTotalDuration } from '../../core/utils/format-duration.util';
-import { runAfterDeleteAnimation } from '../../core/constants/delete-animation.constants';
-import { DeleteExplosionComponent } from '../../shared/components/delete-explosion/delete-explosion.component';
-import { SongItemComponent } from '../../shared/components/song-item/song-item.component';
-import { PlaylistCoverComponent } from '../../shared/components/playlist-cover/playlist-cover.component';
+import { SearchSettingsService } from '../../../core/services/search-settings.service';
+import { SongSearchService } from '../../../core/services/song-search.service';
+import { PlaybackService } from '../../../core/services/playback.service';
+import { PlaylistService } from '../../../core/services/playlist.service';
+import { Playlist } from '../../../core/models/playlist.model';
+import { SongSearchSource } from '../../../core/models/song-search.model';
+import { Song } from '../../../core/models/song.model';
+import { formatDuration, formatTotalDuration } from '../../../core/utils/format-duration.util';
+import { runAfterDeleteAnimation } from '../../../core/constants/delete-animation.constants';
+import { DeleteExplosionComponent } from '../delete-explosion/delete-explosion.component';
+import { SongItemComponent } from '../song-item/song-item.component';
+import { PlaylistCoverComponent } from '../playlist-cover/playlist-cover.component';
 
+/** Contenido del detalle de una playlist (sin el modal contenedor). */
 @Component({
-  selector: 'app-playlist-detail',
+  selector: 'app-playlist-detail-panel',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -53,10 +54,10 @@ import { PlaylistCoverComponent } from '../../shared/components/playlist-cover/p
     DeleteExplosionComponent,
     PlaylistCoverComponent,
   ],
-  templateUrl: './playlist-detail.component.html',
-  styleUrl: './playlist-detail.component.scss',
+  templateUrl: './playlist-detail-panel.component.html',
+  styleUrl: './playlist-detail-panel.component.scss',
 })
-export class PlaylistDetailComponent implements OnInit {
+export class PlaylistDetailPanelComponent implements OnInit {
   @ViewChild('playlistMenu') playlistMenu!: Menu;
 
   readonly playlistId = input.required<string>();

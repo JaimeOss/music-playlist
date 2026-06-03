@@ -99,8 +99,3 @@
   border-color: var(--app-input-border);
   color: var(--app-input-text);
 }
-
-:host ::ng-deep .home-detail-dialog .p-dialog-content {
-  overflow-y: auto;
-  max-height: min(70vh, 40rem);
-}

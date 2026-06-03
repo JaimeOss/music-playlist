@@ -3,6 +3,9 @@
 
 :root,
 [data-theme='dark'] {
+  /* Capas: sidebar 20, modales PrimeNG ~1100+, reproductor siempre encima */
+  --app-z-shell: 20;
+  --app-z-player: 1300;
   color-scheme: dark;
   --app-primary: #2563eb;
   --app-primary-hover: #1d4ed8;
@@ -119,6 +122,11 @@ html.theme-transition *::after {
 body {
   background-color: var(--app-bg);
   color: var(--app-text);
+}
+
+/* Reproductor global por encima de diálogos y máscaras modales */
+app-audio-player .player-shell {
+  z-index: var(--app-z-player);
 }
 
 .p-progressspinner-circle {
