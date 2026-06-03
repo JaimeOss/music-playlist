@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,7 +6,6 @@ import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { PlaylistService } from '../../core/services/playlist.service';
-import { Playlist } from '../../core/models/playlist.model';
 import { PlaylistCardComponent } from '../../shared/components/playlist-card/playlist-card.component';
 import { PlaylistCreateCardComponent } from '../../shared/components/playlist-create-card/playlist-create-card.component';
 import { PlaylistDetailComponent } from '../playlist-detail/playlist-detail.component';
@@ -33,19 +32,33 @@ export class HomeComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
 
-  activePlaylists: Playlist[] = [];
-  blockedPlaylists: Playlist[] = [];
+  readonly selectedPlaylistId = signal<string | null>(null);
   createDialogVisible = false;
   detailDialogVisible = false;
-  selectedPlaylistId: string | null = null;
+
+  readonly activePlaylists = computed(() =>
+    this.playlistService.playlists().filter((playlist) => !playlist.locked),
+  );
+
+  readonly blockedPlaylists = computed(() =>
+    this.playlistService.playlists().filter((playlist) => playlist.locked),
+  );
+
+  readonly detailDialogHeader = computed(() => {
+    const id = this.selectedPlaylistId();
+
+    if (!id) {
+      return 'Detalle de playlist';
+    }
+
+    return this.playlistService.getPlaylistById(id)?.name ?? 'Detalle de playlist';
+  });
 
   readonly createForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
   });
 
   ngOnInit(): void {
-    this.loadPlaylists();
-
     this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const playlistId = params.get('playlist');
 
@@ -53,21 +66,6 @@ export class HomeComponent implements OnInit {
         this.openDetail(playlistId);
       }
     });
-  }
-
-  get detailDialogHeader(): string {
-    if (!this.selectedPlaylistId) {
-      return 'Detalle de playlist';
-    }
-
-    const playlist = this.playlistService.getPlaylistById(this.selectedPlaylistId);
-    return playlist?.name ?? 'Detalle de playlist';
-  }
-
-  loadPlaylists(): void {
-    const all = this.playlistService.getPlaylists();
-    this.activePlaylists = all.filter((playlist) => !playlist.locked);
-    this.blockedPlaylists = all.filter((playlist) => playlist.locked);
   }
 
   openCreateDialog(): void {
@@ -84,7 +82,6 @@ export class HomeComponent implements OnInit {
     const name = this.createForm.getRawValue().name!;
     const playlist = this.playlistService.createPlaylist(name);
     this.createDialogVisible = false;
-    this.loadPlaylists();
     this.openDetail(playlist.id);
   }
 
@@ -97,21 +94,21 @@ export class HomeComponent implements OnInit {
       return;
     }
 
-    this.selectedPlaylistId = id;
+    this.selectedPlaylistId.set(id);
     this.detailDialogVisible = true;
     this.syncPlaylistQueryParam(id);
   }
 
   onDetailClosed(): void {
     this.detailDialogVisible = false;
-    this.selectedPlaylistId = null;
+    this.selectedPlaylistId.set(null);
     this.syncPlaylistQueryParam(null);
   }
 
   onPlaylistsChanged(): void {
-    this.loadPlaylists();
+    const id = this.selectedPlaylistId();
 
-    if (this.selectedPlaylistId && !this.playlistService.getPlaylistById(this.selectedPlaylistId)) {
+    if (id && !this.playlistService.getPlaylistById(id)) {
       this.onDetailClosed();
     }
   }

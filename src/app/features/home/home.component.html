@@ -5,17 +5,17 @@
     <section class="home__section" aria-label="Tus listas de reproducción">
       <div class="home__grid">
         <app-playlist-create-card (createClick)="openCreateDialog()" />
-        @for (playlist of activePlaylists; track playlist.id) {
+        @for (playlist of activePlaylists(); track playlist.id) {
           <app-playlist-card [playlist]="playlist" (cardClick)="onPlaylistClick($event)" />
         }
       </div>
     </section>
 
-    @if (blockedPlaylists.length > 0) {
+    @if (blockedPlaylists().length > 0) {
       <section class="home__section home__section--blocked" aria-label="Listas bloqueadas">
         <h2 class="home__section-title">Bloqueadas</h2>
         <div class="home__grid">
-          @for (playlist of blockedPlaylists; track playlist.id) {
+          @for (playlist of blockedPlaylists(); track playlist.id) {
             <app-playlist-card [playlist]="playlist" (cardClick)="onPlaylistClick($event)" />
           }
         </div>
@@ -70,7 +70,7 @@
 </p-dialog>
 
 <p-dialog
-  [header]="detailDialogHeader"
+  [header]="detailDialogHeader()"
   [(visible)]="detailDialogVisible"
   [modal]="true"
   [draggable]="false"
@@ -78,7 +78,7 @@
   styleClass="home-detail-dialog"
   (onHide)="onDetailClosed()"
 >
-  @if (selectedPlaylistId; as playlistId) {
+  @if (selectedPlaylistId(); as playlistId) {
     <app-playlist-detail
       [playlistId]="playlistId"
       (closed)="onDetailClosed()"

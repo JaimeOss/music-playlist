@@ -244,6 +244,39 @@
 </p-dialog>
 
 <p-dialog
+  header="Bloquear lista"
+  [(visible)]="lockConfirmDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [style]="{ width: '24rem' }"
+  styleClass="detail-dialog"
+>
+  <div class="detail-dialog__body">
+    <p class="detail-dialog__text">
+      ¿Bloquear <span class="detail-dialog__text-strong">{{ playlist?.name }}</span>? Podrás ver y
+      reproducir sus canciones, pero no editar ni modificar el contenido hasta desbloquearla.
+    </p>
+
+    <div class="detail-dialog__actions">
+      <p-button
+        type="button"
+        label="Cancelar"
+        severity="secondary"
+        [text]="true"
+        (onClick)="cancelLockPlaylist()"
+      />
+      <p-button
+        type="button"
+        label="Bloquear"
+        icon="pi pi-lock"
+        severity="warn"
+        (onClick)="confirmLockPlaylist()"
+      />
+    </div>
+  </div>
+</p-dialog>
+
+<p-dialog
   header="Eliminar canción"
   [(visible)]="deleteSongDialogVisible"
   [modal]="true"

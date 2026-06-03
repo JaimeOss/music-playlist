@@ -66,20 +66,20 @@
   [draggable]="false"
   [style]="{ width: 'min(24rem, calc(100vw - 2rem))' }"
   styleClass="song-search-picker-dialog"
-  (onHide)="songToAdd = null"
+  (onHide)="songToAdd.set(null)"
 >
   <div class="song-search-picker">
     @if (!hasEditablePlaylists) {
       <p class="song-search-picker__empty">
         No hay listas editables. Crea una nueva lista o desbloquea una existente.
       </p>
-    } @else if (songToAdd; as song) {
+    } @else if (songToAdd(); as song) {
       <p class="song-search-picker__intro">
         Elige dónde agregar <span class="song-search-picker__song">{{ song.title }}</span>
       </p>
 
       <ul class="song-search-picker__list">
-        @for (playlist of editablePlaylists; track playlist.id) {
+        @for (playlist of editablePlaylists(); track playlist.id) {
           <li>
             <button
               type="button"

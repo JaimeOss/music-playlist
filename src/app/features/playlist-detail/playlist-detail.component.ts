@@ -79,6 +79,7 @@ export class PlaylistDetailComponent implements OnInit {
   renameDialogVisible = false;
   deleteDialogVisible = false;
   deleteSongDialogVisible = false;
+  lockConfirmDialogVisible = false;
   songToDelete: Song | null = null;
   readonly deletingSongIds = new Set<string>();
   isPlaylistDeleting = false;
@@ -97,6 +98,8 @@ export class PlaylistDetailComponent implements OnInit {
   constructor() {
     effect(() => {
       const id = this.playlistId();
+      this.playlistService.playlists();
+
       if (id) {
         this.loadPlaylist();
       }
@@ -264,7 +267,7 @@ export class PlaylistDetailComponent implements OnInit {
       {
         label: this.isLocked ? 'Desbloquear lista' : 'Bloquear lista',
         icon: this.isLocked ? 'pi pi-lock-open' : 'pi pi-lock',
-        command: () => this.toggleLock(),
+        command: () => this.requestToggleLock(),
       },
     ];
 
@@ -289,7 +292,25 @@ export class PlaylistDetailComponent implements OnInit {
     this.playlistMenu.toggle(event);
   }
 
-  toggleLock(): void {
+  requestToggleLock(): void {
+    if (this.isLocked) {
+      this.applyToggleLock();
+      return;
+    }
+
+    this.lockConfirmDialogVisible = true;
+  }
+
+  confirmLockPlaylist(): void {
+    this.lockConfirmDialogVisible = false;
+    this.applyToggleLock();
+  }
+
+  cancelLockPlaylist(): void {
+    this.lockConfirmDialogVisible = false;
+  }
+
+  private applyToggleLock(): void {
     this.playlistService.toggleLock(this.playlistId());
     this.loadPlaylist();
     this.playlistsChanged.emit();

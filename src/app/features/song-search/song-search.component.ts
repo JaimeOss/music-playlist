@@ -1,4 +1,4 @@
-import { Component, DestroyRef, effect, inject, OnInit } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
@@ -12,7 +12,6 @@ import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { ProgressSpinner } from 'primeng/progressspinner';
-import { Playlist } from '../../core/models/playlist.model';
 import { SongSearchSource } from '../../core/models/song-search.model';
 import { Song } from '../../core/models/song.model';
 import { PlaylistService } from '../../core/services/playlist.service';
@@ -48,9 +47,12 @@ export class SongSearchComponent implements OnInit {
   searchError = false;
 
   pickerDialogVisible = false;
-  songToAdd: Song | null = null;
-  editablePlaylists: Playlist[] = [];
+  readonly songToAdd = signal<Song | null>(null);
   addSuccessMessage: string | null = null;
+
+  readonly editablePlaylists = computed(() =>
+    this.playlistService.playlists().filter((playlist) => !playlist.locked),
+  );
 
   constructor() {
     effect(() => {
@@ -157,21 +159,18 @@ export class SongSearchComponent implements OnInit {
   }
 
   get hasEditablePlaylists(): boolean {
-    return this.editablePlaylists.length > 0;
+    return this.editablePlaylists().length > 0;
   }
 
   openPlaylistPicker(song: Song): void {
-    this.songToAdd = song;
-    this.editablePlaylists = this.playlistService
-      .getPlaylists()
-      .filter((playlist) => !playlist.locked);
+    this.songToAdd.set(song);
     this.addSuccessMessage = null;
     this.pickerDialogVisible = true;
   }
 
   closePlaylistPicker(): void {
     this.pickerDialogVisible = false;
-    this.songToAdd = null;
+    this.songToAdd.set(null);
   }
 
   isSongInPlaylist(playlistId: string, songId: string): boolean {
@@ -182,22 +181,24 @@ export class SongSearchComponent implements OnInit {
   }
 
   confirmAddToPlaylist(playlistId: string): void {
-    if (!this.songToAdd) {
+    const song = this.songToAdd();
+
+    if (!song) {
       return;
     }
 
-    if (this.isSongInPlaylist(playlistId, this.songToAdd.id)) {
+    if (this.isSongInPlaylist(playlistId, song.id) || !this.playlistService.canMutatePlaylist(playlistId)) {
       return;
     }
 
     const playlist = this.playlistService.getPlaylistById(playlistId);
 
-    if (!playlist || playlist.locked) {
+    if (!playlist) {
       return;
     }
 
-    this.playlistService.addSong(playlistId, this.songToAdd);
-    this.addSuccessMessage = `«${this.songToAdd.title}» se agregó a ${playlist.name}.`;
+    this.playlistService.addSong(playlistId, song);
+    this.addSuccessMessage = `«${song.title}» se agregó a ${playlist.name}.`;
     this.closePlaylistPicker();
   }
 
