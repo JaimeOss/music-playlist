@@ -1,8 +1,17 @@
-import { Component, DestroyRef, ChangeDetectorRef, effect, inject, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ChangeDetectorRef,
+  effect,
+  inject,
+  input,
+  OnInit,
+  output,
+  ViewChild,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -11,13 +20,11 @@ import {
   of,
 } from 'rxjs';
 import { MenuItem } from 'primeng/api';
-import { Avatar } from 'primeng/avatar';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Menu } from 'primeng/menu';
 import { ProgressSpinner } from 'primeng/progressspinner';
-import { AuthService } from '../../core/services/auth.service';
 import { SearchSettingsService } from '../../core/services/search-settings.service';
 import { SongSearchService } from '../../core/services/song-search.service';
 import { PlaybackService } from '../../core/services/playback.service';
@@ -30,7 +37,6 @@ import { runAfterDeleteAnimation } from '../../core/constants/delete-animation.c
 import { DeleteExplosionComponent } from '../../shared/components/delete-explosion/delete-explosion.component';
 import { SongItemComponent } from '../../shared/components/song-item/song-item.component';
 import { PlaylistCoverComponent } from '../../shared/components/playlist-cover/playlist-cover.component';
-import { UserHeaderMenuComponent } from '../../shared/components/user-header-menu/user-header-menu.component';
 
 @Component({
   selector: 'app-playlist-detail',
@@ -38,7 +44,6 @@ import { UserHeaderMenuComponent } from '../../shared/components/user-header-men
   imports: [
     ReactiveFormsModule,
     DragDropModule,
-    Avatar,
     Button,
     Dialog,
     InputText,
@@ -47,7 +52,6 @@ import { UserHeaderMenuComponent } from '../../shared/components/user-header-men
     SongItemComponent,
     DeleteExplosionComponent,
     PlaylistCoverComponent,
-    UserHeaderMenuComponent,
   ],
   templateUrl: './playlist-detail.component.html',
   styleUrl: './playlist-detail.component.scss',
@@ -55,9 +59,10 @@ import { UserHeaderMenuComponent } from '../../shared/components/user-header-men
 export class PlaylistDetailComponent implements OnInit {
   @ViewChild('playlistMenu') playlistMenu!: Menu;
 
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
-  private readonly authService = inject(AuthService);
+  readonly playlistId = input.required<string>();
+  readonly closed = output<void>();
+  readonly playlistsChanged = output<void>();
+
   private readonly playlistService = inject(PlaylistService);
   readonly playback = inject(PlaybackService);
   readonly searchSettings = inject(SearchSettingsService);
@@ -67,7 +72,6 @@ export class PlaylistDetailComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   playlist: Playlist | null = null;
-  playlistId = '';
 
   private readonly blockedPlaySongIds = new Set<string>();
 
@@ -88,20 +92,16 @@ export class PlaylistDetailComponent implements OnInit {
     name: ['', [Validators.required, Validators.minLength(2)]],
   });
 
-  readonly playlistMenuItems: MenuItem[] = [
-    {
-      label: 'Renombrar',
-      icon: 'pi pi-pencil',
-      command: () => this.openRenameDialog(),
-    },
-    {
-      label: 'Eliminar playlist',
-      icon: 'pi pi-trash',
-      command: () => this.openDeleteDialog(),
-    },
-  ];
+  playlistMenuItems: MenuItem[] = [];
 
   constructor() {
+    effect(() => {
+      const id = this.playlistId();
+      if (id) {
+        this.loadPlaylist();
+      }
+    });
+
     effect(() => {
       const useItunes = this.searchSettings.useItunes();
 
@@ -127,9 +127,6 @@ export class PlaylistDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.playlistId = this.route.snapshot.paramMap.get('id') ?? '';
-    this.loadPlaylist();
-
     this.searchControl.valueChanges
       .pipe(
         debounceTime(200),
@@ -175,6 +172,10 @@ export class PlaylistDetailComponent implements OnInit {
       });
   }
 
+  get isLocked(): boolean {
+    return this.playlist?.locked ?? false;
+  }
+
   get searchPlaceholder(): string {
     return this.searchSettings.useItunes()
       ? 'Buscar en iTunes...'
@@ -203,6 +204,23 @@ export class PlaylistDetailComponent implements OnInit {
     return query.length > 0;
   }
 
+  get songCountLabel(): string {
+    const count = this.playlist?.songs.length ?? 0;
+    return count === 1 ? '1 canción' : `${count} canciones`;
+  }
+
+  get totalDurationLabel(): string {
+    const totalMs =
+      this.playlist?.songs.reduce((sum, song) => sum + song.duration, 0) ?? 0;
+
+    return formatTotalDuration(totalMs);
+  }
+
+  get playlistMetaLabel(): string {
+    const lockLabel = this.isLocked ? ' · Bloqueada' : '';
+    return `${this.songCountLabel} · ${this.totalDurationLabel}${lockLabel}`;
+  }
+
   private applySearchResult(result: { songs: Song[]; source: SongSearchSource }): void {
     this.searchResults = result.songs;
     this.searchSource = result.source;
@@ -229,72 +247,76 @@ export class PlaylistDetailComponent implements OnInit {
     });
   }
 
-  get currentUserName(): string {
-    return this.authService.getCurrentUser()?.name ?? 'Usuario';
-  }
-
-  get userInitials(): string {
-    return this.currentUserName
-      .split(' ')
-      .filter(Boolean)
-      .map((part) => part[0])
-      .join('')
-      .slice(0, 2)
-      .toUpperCase();
-  }
-
-  get songCountLabel(): string {
-    const count = this.playlist?.songs.length ?? 0;
-    return count === 1 ? '1 canción' : `${count} canciones`;
-  }
-
-  get totalDurationLabel(): string {
-    const totalMs =
-      this.playlist?.songs.reduce((sum, song) => sum + song.duration, 0) ?? 0;
-
-    return formatTotalDuration(totalMs);
-  }
-
-  get playlistMetaLabel(): string {
-    return `${this.songCountLabel} · ${this.totalDurationLabel}`;
-  }
-
   loadPlaylist(): void {
-    const playlist = this.playlistService.getPlaylistById(this.playlistId);
+    const playlist = this.playlistService.getPlaylistById(this.playlistId());
 
     if (!playlist) {
-      this.router.navigate(['/home']);
+      this.closed.emit();
       return;
     }
 
     this.playlist = playlist;
+    this.buildPlaylistMenuItems();
   }
 
-  goBack(): void {
-    this.router.navigate(['/home']);
+  private buildPlaylistMenuItems(): void {
+    const items: MenuItem[] = [
+      {
+        label: this.isLocked ? 'Desbloquear lista' : 'Bloquear lista',
+        icon: this.isLocked ? 'pi pi-lock-open' : 'pi pi-lock',
+        command: () => this.toggleLock(),
+      },
+    ];
+
+    if (!this.isLocked) {
+      items.push({
+        label: 'Renombrar',
+        icon: 'pi pi-pencil',
+        command: () => this.openRenameDialog(),
+      });
+    }
+
+    items.push({
+      label: 'Eliminar playlist',
+      icon: 'pi pi-trash',
+      command: () => this.openDeleteDialog(),
+    });
+
+    this.playlistMenuItems = items;
   }
 
   openPlaylistMenu(event: Event): void {
     this.playlistMenu.toggle(event);
   }
 
+  toggleLock(): void {
+    this.playlistService.toggleLock(this.playlistId());
+    this.loadPlaylist();
+    this.playlistsChanged.emit();
+  }
+
   openRenameDialog(): void {
+    if (this.isLocked) {
+      return;
+    }
+
     this.renameForm.reset({ name: this.playlist?.name ?? '' });
     this.renameDialogVisible = true;
   }
 
   confirmRename(): void {
-    if (this.renameForm.invalid || !this.playlist) {
+    if (this.renameForm.invalid || !this.playlist || this.isLocked) {
       this.renameForm.markAllAsTouched();
       return;
     }
 
     const name = this.renameForm.getRawValue().name!;
-    this.playlistService.renamePlaylist(this.playlistId, name);
+    this.playlistService.renamePlaylist(this.playlistId(), name);
     this.loadPlaylist();
+    this.playlistsChanged.emit();
 
-    if (this.playback.isActiveInPlaylist(this.playlistId)) {
-      this.playback.setPlaylistContext(this.playlistId, name);
+    if (this.playback.isActiveInPlaylist(this.playlistId())) {
+      this.playback.setPlaylistContext(this.playlistId(), name);
     }
 
     this.renameDialogVisible = false;
@@ -313,19 +335,18 @@ export class PlaylistDetailComponent implements OnInit {
     this.isPlaylistDeleting = true;
 
     runAfterDeleteAnimation(() => {
-      this.playback.closeIfPlaylist(this.playlistId);
-      this.playlistService.deletePlaylist(this.playlistId);
-      this.router.navigate(['/home']);
+      this.playback.closeIfPlaylist(this.playlistId());
+      this.playlistService.deletePlaylist(this.playlistId());
+      this.playlistsChanged.emit();
+      this.closed.emit();
     });
   }
 
-  logout(): void {
-    this.playback.clearOnLogout();
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
-
   openSearchDialog(): void {
+    if (this.isLocked) {
+      return;
+    }
+
     this.searchControl.setValue('');
     this.searchError = false;
     this.searchDialogVisible = true;
@@ -340,32 +361,42 @@ export class PlaylistDetailComponent implements OnInit {
   }
 
   addSong(song: Song): void {
-    if (this.isSongInPlaylist(song.id)) {
+    if (this.isLocked || this.isSongInPlaylist(song.id)) {
       return;
     }
 
-    this.playlistService.addSong(this.playlistId, song);
+    this.playlistService.addSong(this.playlistId(), song);
     this.loadPlaylist();
+    this.playlistsChanged.emit();
     this.searchDialogVisible = false;
 
     const added = this.playlist?.songs.find((item) => item.id === song.id);
     if (added) {
-      this.playback.setPlaylistContext(this.playlistId, this.playlist!.name);
+      this.playback.setPlaylistContext(this.playlistId(), this.playlist!.name);
       this.playback.selectAndPlay(added);
     }
   }
 
   removeSong(song: Song): void {
+    if (this.isLocked) {
+      return;
+    }
+
     this.blockedPlaySongIds.add(song.id);
-    this.playback.handleSongRemoved(this.playlistId, song.id);
-    this.playlistService.removeSong(this.playlistId, song.id);
+    this.playback.handleSongRemoved(this.playlistId(), song.id);
+    this.playlistService.removeSong(this.playlistId(), song.id);
     this.loadPlaylist();
+    this.playlistsChanged.emit();
     this.cdr.markForCheck();
 
     queueMicrotask(() => this.blockedPlaySongIds.delete(song.id));
   }
 
   openDeleteSongDialog(song: Song): void {
+    if (this.isLocked) {
+      return;
+    }
+
     this.songToDelete = song;
     this.deleteSongDialogVisible = true;
   }
@@ -396,9 +427,9 @@ export class PlaylistDetailComponent implements OnInit {
       return;
     }
 
-    this.playback.setPlaylistContext(this.playlistId, this.playlist!.name);
+    this.playback.setPlaylistContext(this.playlistId(), this.playlist!.name);
 
-    if (this.playback.isSongSelected(this.playlistId, song.id)) {
+    if (this.playback.isSongSelected(this.playlistId(), song.id)) {
       this.playback.toggleCurrentSong();
       return;
     }
@@ -411,14 +442,15 @@ export class PlaylistDetailComponent implements OnInit {
   }
 
   onSongDrop(event: CdkDragDrop<Song[]>): void {
-    if (!this.playlist || event.previousIndex === event.currentIndex) {
+    if (this.isLocked || !this.playlist || event.previousIndex === event.currentIndex) {
       return;
     }
 
     const songs = [...this.playlist.songs];
     moveItemInArray(songs, event.previousIndex, event.currentIndex);
-    this.playlistService.updatePlaylistSongs(this.playlistId, songs);
+    this.playlistService.updatePlaylistSongs(this.playlistId(), songs);
     this.loadPlaylist();
+    this.playlistsChanged.emit();
     this.cdr.markForCheck();
   }
 

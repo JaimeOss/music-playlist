@@ -1,0 +1,23 @@
+.song-search {
+  margin-inline: auto;
+  max-width: 72rem;
+  padding: 2rem 1rem;
+}
+
+.song-search__title {
+  margin-bottom: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.song-search__hint {
+  color: var(--app-text-muted);
+  font-size: 0.9375rem;
+}
+
+@media (min-width: 640px) {
+  .song-search {
+    padding-inline: 1.5rem;
+  }
+}

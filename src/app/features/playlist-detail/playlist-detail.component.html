@@ -1,26 +1,6 @@
 @if (playlist) {
   <div class="detail" [class.detail--deleting]="isPlaylistDeleting">
-    <header class="detail__header">
-      <div class="detail__header-user">
-        <p-avatar [label]="userInitials" shape="circle" styleClass="detail-avatar" />
-        <span class="detail__user-name">{{ currentUserName }}</span>
-      </div>
-
-      <app-user-header-menu menuTriggerClass="detail-menu-trigger" (logout)="logout()" />
-    </header>
-
-    <main class="detail__main">
-      <p-button
-        type="button"
-        icon="pi pi-arrow-left"
-        label="Volver"
-        [text]="true"
-        severity="secondary"
-        styleClass="detail-back-btn"
-        ariaLabel="Volver"
-        (onClick)="goBack()"
-      />
-
+    <div class="detail__main">
       <section class="detail__hero">
         @if (isPlaylistDeleting) {
           <app-delete-explosion [large]="true" />
@@ -34,6 +14,12 @@
           <p class="detail__type">Playlist</p>
           <div class="detail__title-row">
             <h1 class="detail__title">{{ playlist.name }}</h1>
+            @if (isLocked) {
+              <span class="detail__lock-badge" aria-label="Lista bloqueada">
+                <i class="pi pi-lock" aria-hidden="true"></i>
+                Bloqueada
+              </span>
+            }
             <p-button
               type="button"
               icon="pi pi-ellipsis-v"
@@ -52,23 +38,37 @@
 
       <div class="detail__actions">
         <h2 class="detail__section-title">Listado de canciones</h2>
-        <p-button
-          type="button"
-          icon="pi pi-plus"
-          label="Agregar canción"
-          styleClass="detail-action-btn app-btn--add-mobile"
-          ariaLabel="Agregar canción"
-          (onClick)="openSearchDialog()"
-        />
+        @if (!isLocked) {
+          <p-button
+            type="button"
+            icon="pi pi-plus"
+            label="Agregar canción"
+            styleClass="detail-action-btn app-btn--add-mobile"
+            ariaLabel="Agregar canción"
+            (onClick)="openSearchDialog()"
+          />
+        }
       </div>
+
+      @if (isLocked) {
+        <p class="detail__locked-hint">
+          Esta lista está bloqueada. Puedes ver y reproducir canciones, pero no modificar el contenido.
+        </p>
+      }
 
       @if (playlist.songs.length === 0) {
         <div class="detail__empty">Esta playlist aún no tiene canciones.</div>
       } @else {
-        <div cdkDropList class="detail__song-list song-drop-list" (cdkDropListDropped)="onSongDrop($event)">
+        <div
+          cdkDropList
+          class="detail__song-list song-drop-list"
+          [cdkDropListDisabled]="isLocked"
+          (cdkDropListDropped)="onSongDrop($event)"
+        >
           @for (song of playlist.songs; track song.id) {
             <div
               cdkDrag
+              [cdkDragDisabled]="isLocked"
               class="song-drag-item"
               [class.song-drag-item--deleting]="deletingSongIds.has(song.id)"
             >
@@ -78,9 +78,10 @@
 
               <app-song-item
                 [song]="song"
-                [reorderable]="true"
-                [isSelected]="playback.isSongSelected(playlistId, song.id)"
-                [isPlaying]="playback.isPlaying() && playback.isSongSelected(playlistId, song.id)"
+                [reorderable]="!isLocked"
+                [showActions]="!isLocked"
+                [isSelected]="playback.isSongSelected(playlistId(), song.id)"
+                [isPlaying]="playback.isPlaying() && playback.isSongSelected(playlistId(), song.id)"
                 (onPlay)="onPlaySong($event)"
                 (onDelete)="openDeleteSongDialog($event)"
               />
@@ -88,7 +89,7 @@
           }
         </div>
       }
-    </main>
+    </div>
   </div>
 }
 

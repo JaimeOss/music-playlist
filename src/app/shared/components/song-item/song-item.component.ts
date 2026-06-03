@@ -18,6 +18,7 @@ export class SongItemComponent {
 
   @Input({ required: true }) song!: Song;
   @Input() reorderable = false;
+  @Input() showActions = true;
   @Input() isSelected = false;
   @Input() isPlaying = false;
   @Output() onPlay = new EventEmitter<Song>();

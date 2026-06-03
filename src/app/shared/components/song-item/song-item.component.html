@@ -38,15 +38,17 @@
     (onClick)="handlePlay($event)"
   />
 
-  <p-button
-    type="button"
-    icon="pi pi-ellipsis-v"
-    [rounded]="true"
-    [text]="true"
-    severity="secondary"
-    styleClass="song-item__action"
-    ariaLabel="Opciones de canción"
-    (onClick)="openMenu($event)"
-  />
-  <p-menu #songMenu [model]="menuItems" [popup]="true" appendTo="body" />
+  @if (showActions) {
+    <p-button
+      type="button"
+      icon="pi pi-ellipsis-v"
+      [rounded]="true"
+      [text]="true"
+      severity="secondary"
+      styleClass="song-item__action"
+      ariaLabel="Opciones de canción"
+      (onClick)="openMenu($event)"
+    />
+    <p-menu #songMenu [model]="menuItems" [popup]="true" appendTo="body" />
+  }
 </div>

@@ -1,63 +1,96 @@
 .playlist-card {
   width: 100%;
   cursor: pointer;
-  border-radius: 0.75rem;
-  background-color: var(--app-bg-card);
-  padding: 0.75rem;
-  text-align: left;
   border: none;
-  transition:
-    transform 0.2s ease,
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
+  padding: 0;
+  background: transparent;
+  text-align: left;
 
-.playlist-card:hover {
-  transform: translateY(-0.25rem);
-  background-color: var(--app-bg-card-hover);
-  box-shadow: 0 10px 15px -3px var(--app-shadow-card);
-}
-
-.playlist-card:focus-visible {
-  outline: 2px solid var(--app-primary-light);
-  outline-offset: 2px;
+  &:focus-visible .playlist-card__cover {
+    outline: 2px solid var(--app-primary-light);
+    outline-offset: 2px;
+  }
 }
 
 .playlist-card__cover {
-  margin-bottom: 0.75rem;
+  position: relative;
   aspect-ratio: 1;
   overflow: hidden;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
+  background-color: var(--app-image-bg);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.playlist-card__header {
+.playlist-card:hover .playlist-card__cover {
+  transform: translateY(-0.25rem);
+  box-shadow: 0 10px 15px -3px var(--app-shadow-card);
+}
+
+.playlist-card:hover .playlist-card__overlay {
+  opacity: 1;
+}
+
+.playlist-card--locked .playlist-card__cover {
+  box-shadow: inset 0 0 0 2px rgb(234 179 8 / 45%);
+}
+
+.playlist-card__lock {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 2;
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 9999px;
+  background: rgb(0 0 0 / 55%);
+  font-size: 0.875rem;
+  color: #fbbf24;
+}
+
+.playlist-card__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 0.5rem;
-  margin-bottom: 0.25rem;
+  padding: 0.75rem;
+  background: rgb(0 0 0 / 55%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+[data-theme='light'] .playlist-card__overlay {
+  background: rgb(255 255 255 / 88%);
 }
 
 .playlist-card__title {
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  text-align: center;
   font-size: 0.875rem;
   font-weight: 600;
+  line-height: 1.3;
+  color: #fff;
+}
+
+[data-theme='light'] .playlist-card__title {
   color: var(--app-text);
 }
 
 .playlist-card__badge {
-  flex-shrink: 0;
   border-radius: 9999px;
   background-color: var(--app-primary-muted);
   padding: 0.125rem 0.5rem;
   font-size: 0.625rem;
   font-weight: 500;
   color: var(--app-primary-text);
-}
-
-.playlist-card__meta {
-  margin-top: 0.25rem;
-  font-size: 0.75rem;
-  color: var(--app-text-muted);
 }

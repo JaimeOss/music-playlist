@@ -6,4 +6,5 @@ export interface Playlist {
   cover: string;
   songs: Song[];
   createdAt: Date;
+  locked: boolean;
 }

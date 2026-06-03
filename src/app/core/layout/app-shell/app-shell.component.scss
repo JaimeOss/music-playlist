@@ -1,0 +1,135 @@
+.shell {
+  display: flex;
+  min-height: 100dvh;
+  background-color: var(--app-bg);
+  color: var(--app-text);
+}
+
+.shell__sidebar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 4rem;
+  height: 100dvh;
+  border-right: 1px solid var(--app-border);
+  background-color: var(--app-bg-elevated);
+  padding-block: 1rem;
+}
+
+.shell__nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding-inline: 0.5rem;
+}
+
+.shell__nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  color: var(--app-menu-trigger-color);
+  text-decoration: none;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  i {
+    font-size: 1.125rem;
+  }
+
+  &:hover {
+    background-color: var(--app-menu-trigger-hover-bg);
+    color: var(--app-menu-trigger-hover-color);
+  }
+}
+
+.shell__nav-link--active {
+  background-color: var(--app-primary-muted);
+  color: var(--app-primary-text);
+}
+
+.shell__sidebar-footer {
+  display: flex;
+  justify-content: center;
+  padding-inline: 0.5rem;
+}
+
+.shell__body {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.shell__header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+  border-bottom: 1px solid var(--app-border);
+  background-color: var(--app-header-bg);
+  padding: 1rem 1.5rem;
+  backdrop-filter: blur(8px);
+}
+
+.shell__header-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.shell__user-name {
+  display: none;
+  font-size: 0.875rem;
+  color: var(--app-text-secondary);
+}
+
+.shell__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.shell__toggle-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.shell__note-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.shell__toggle-check {
+  margin-left: auto;
+  color: var(--app-primary-text);
+}
+
+@media (min-width: 640px) {
+  .shell__user-name {
+    display: inline;
+  }
+}
+
+:host ::ng-deep .shell-avatar.p-avatar {
+  background-color: var(--app-primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+:host ::ng-deep .shell__settings-trigger.p-button {
+  color: var(--app-menu-trigger-color);
+}
+
+:host ::ng-deep .shell__settings-trigger.p-button:enabled:hover {
+  color: var(--app-primary-text);
+  background-color: var(--app-primary-muted);
+}

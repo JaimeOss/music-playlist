@@ -1,46 +1,27 @@
 <div class="home">
-  <header class="home__header">
-    <div class="home__header-user">
-      <p-avatar [label]="userInitials" shape="circle" styleClass="home-avatar" />
-      <span class="home__user-name">{{ currentUserName }}</span>
-    </div>
+  <div class="home__main">
+    <h1 class="home__title">Listas de reproducción</h1>
 
-    <app-user-header-menu menuTriggerClass="home-menu-trigger" (logout)="logout()" />
-  </header>
-
-  <main class="home__main">
-    <div class="home__toolbar">
-      <h1 class="home__title">Listas de reproducción</h1>
-      <p-button
-        type="button"
-        icon="pi pi-plus"
-        label="Nueva lista"
-        styleClass="home-create-btn app-btn--add-mobile"
-        ariaLabel="Nueva lista"
-        (onClick)="openCreateDialog()"
-      />
-    </div>
-
-    @if (playlists.length === 0) {
-      <div class="home__empty">
-        <p class="home__empty-text">No tienes playlists aún</p>
-        <p-button
-          type="button"
-          icon="pi pi-plus"
-          label="Crear playlist"
-          styleClass="home-create-btn app-btn--add-mobile"
-          ariaLabel="Crear playlist"
-          (onClick)="openCreateDialog()"
-        />
-      </div>
-    } @else {
+    <section class="home__section" aria-label="Tus listas de reproducción">
       <div class="home__grid">
-        @for (playlist of playlists; track playlist.id) {
+        <app-playlist-create-card (createClick)="openCreateDialog()" />
+        @for (playlist of activePlaylists; track playlist.id) {
           <app-playlist-card [playlist]="playlist" (cardClick)="onPlaylistClick($event)" />
         }
       </div>
+    </section>
+
+    @if (blockedPlaylists.length > 0) {
+      <section class="home__section home__section--blocked" aria-label="Listas bloqueadas">
+        <h2 class="home__section-title">Bloqueadas</h2>
+        <div class="home__grid">
+          @for (playlist of blockedPlaylists; track playlist.id) {
+            <app-playlist-card [playlist]="playlist" (cardClick)="onPlaylistClick($event)" />
+          }
+        </div>
+      </section>
     }
-  </main>
+  </div>
 </div>
 
 <p-dialog
@@ -86,4 +67,22 @@
       />
     </div>
   </form>
+</p-dialog>
+
+<p-dialog
+  [header]="detailDialogHeader"
+  [(visible)]="detailDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [style]="{ width: 'min(52rem, calc(100vw - 2rem))' }"
+  styleClass="home-detail-dialog"
+  (onHide)="onDetailClosed()"
+>
+  @if (selectedPlaylistId; as playlistId) {
+    <app-playlist-detail
+      [playlistId]="playlistId"
+      (closed)="onDetailClosed()"
+      (playlistsChanged)="onPlaylistsChanged()"
+    />
+  }
 </p-dialog>

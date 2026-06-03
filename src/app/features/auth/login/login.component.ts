@@ -42,7 +42,7 @@ export class LoginComponent {
 
     if (this.authService.login(email, password)) {
       // Mantener la pantalla de carga hasta que el router destruya este componente.
-      this.router.navigate(['/home']);
+      this.router.navigate(['/app/playlists']);
       return;
     }
 

@@ -1,14 +1,22 @@
-<button type="button" class="playlist-card group" (click)="onCardClick()">
+<button
+  type="button"
+  class="playlist-card group"
+  [class.playlist-card--locked]="playlist.locked"
+  [attr.aria-label]="playlist.name"
+  (click)="onCardClick()"
+>
   <div class="playlist-card__cover">
-    <app-playlist-cover [songs]="playlist.songs" [alt]="playlist.name" [hoverScale]="true" />
-  </div>
-
-  <div class="playlist-card__header">
-    <h3 class="playlist-card__title">{{ playlist.name }}</h3>
-    @if (playback.playlistId() === playlist.id && playback.isPlaying()) {
-      <span class="playlist-card__badge">Escuchando ahora</span>
+    @if (playlist.locked) {
+      <span class="playlist-card__lock pi pi-lock" aria-hidden="true"></span>
     }
-  </div>
 
-  <p class="playlist-card__meta">{{ playlistMetaLabel }}</p>
+    <app-playlist-cover [songs]="playlist.songs" [alt]="playlist.name" [hoverScale]="true" />
+
+    <div class="playlist-card__overlay">
+      <h3 class="playlist-card__title">{{ playlist.name }}</h3>
+      @if (playback.playlistId() === playlist.id && playback.isPlaying()) {
+        <span class="playlist-card__badge">Reproduciendo</span>
+      }
+    </div>
+  </div>
 </button>

@@ -1,0 +1,81 @@
+<div class="shell">
+  <aside class="shell__sidebar" aria-label="Menú de navegación">
+    <nav class="shell__nav">
+      @for (item of navItems; track item.route) {
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="shell__nav-link--active"
+          class="shell__nav-link"
+          [attr.aria-label]="item.label"
+          [pTooltip]="item.label"
+          tooltipPosition="right"
+        >
+          <i [class]="item.icon" aria-hidden="true"></i>
+        </a>
+      }
+    </nav>
+
+    <div class="shell__sidebar-footer">
+      <p-button
+        type="button"
+        icon="pi pi-ellipsis-h"
+        [rounded]="true"
+        [text]="true"
+        severity="secondary"
+        styleClass="shell__settings-trigger"
+        ariaLabel="Opciones y cerrar sesión"
+        [pTooltip]="'Opciones'"
+        tooltipPosition="right"
+        (onClick)="openSettingsMenu($event)"
+      />
+      <p-menu #settingsMenu [model]="settingsMenuItems" [popup]="true" appendTo="body">
+        <ng-template #item let-item>
+          @if (item.id === 'theme') {
+            <a class="p-menu-item-link" tabindex="-1" pRipple (click)="onThemeClick($event)">
+              @if (themeService.theme() === 'dark') {
+                <span class="p-menu-item-icon pi pi-sun" data-pc-section="itemicon"></span>
+                <span class="p-menu-item-label" data-pc-section="itemlabel">Tema claro</span>
+              } @else {
+                <span class="p-menu-item-icon pi pi-moon" data-pc-section="itemicon"></span>
+                <span class="p-menu-item-label" data-pc-section="itemlabel">Tema oscuro</span>
+              }
+            </a>
+          } @else if (item.id === 'itunes') {
+            <a
+              class="p-menu-item-link shell__toggle-item"
+              tabindex="-1"
+              pRipple
+              (click)="onItunesClick($event)"
+            >
+              <span class="p-menu-item-icon shell__note-icon" data-pc-section="itemicon" aria-hidden="true"
+                >♪</span
+              >
+              <span class="p-menu-item-label" data-pc-section="itemlabel">Usar iTunes</span>
+              @if (searchSettings.useItunes()) {
+                <span class="shell__toggle-check pi pi-check" aria-hidden="true"></span>
+              }
+            </a>
+          } @else {
+            <a class="p-menu-item-link" tabindex="-1" pRipple>
+              <span [class]="'p-menu-item-icon ' + item.icon" data-pc-section="itemicon"></span>
+              <span class="p-menu-item-label" data-pc-section="itemlabel">{{ item.label }}</span>
+            </a>
+          }
+        </ng-template>
+      </p-menu>
+    </div>
+  </aside>
+
+  <div class="shell__body">
+    <header class="shell__header">
+      <div class="shell__header-user">
+        <p-avatar [label]="userInitials" shape="circle" styleClass="shell-avatar" />
+        <span class="shell__user-name">{{ currentUserName }}</span>
+      </div>
+    </header>
+
+    <main class="shell__main">
+      <router-outlet />
+    </main>
+  </div>
+</div>

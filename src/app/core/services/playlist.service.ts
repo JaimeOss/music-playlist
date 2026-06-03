@@ -15,6 +15,22 @@ export class PlaylistService {
     return this.getPlaylists().find((playlist) => playlist.id === id);
   }
 
+  toggleLock(id: string): void {
+    const playlists = this.getPlaylists();
+    const playlist = playlists.find((item) => item.id === id);
+
+    if (!playlist) {
+      return;
+    }
+
+    playlist.locked = !playlist.locked;
+    this.saveToStorage(playlists);
+  }
+
+  isLocked(id: string): boolean {
+    return this.getPlaylistById(id)?.locked ?? false;
+  }
+
   createPlaylist(name: string): Playlist {
     const playlist: Playlist = {
       id: crypto.randomUUID(),
@@ -22,6 +38,7 @@ export class PlaylistService {
       cover: DEFAULT_COVER,
       songs: [],
       createdAt: new Date(),
+      locked: false,
     };
 
     const playlists = this.getPlaylists();
@@ -41,7 +58,7 @@ export class PlaylistService {
     const playlists = this.getPlaylists();
     const playlist = playlists.find((item) => item.id === id);
 
-    if (!playlist) {
+    if (!playlist || playlist.locked) {
       return;
     }
 
@@ -58,7 +75,7 @@ export class PlaylistService {
     const playlists = this.getPlaylists();
     const playlist = playlists.find((item) => item.id === playlistId);
 
-    if (!playlist) {
+    if (!playlist || playlist.locked) {
       return;
     }
 
@@ -74,7 +91,7 @@ export class PlaylistService {
     const playlists = this.getPlaylists();
     const playlist = playlists.find((item) => item.id === playlistId);
 
-    if (!playlist) {
+    if (!playlist || playlist.locked) {
       return;
     }
 
@@ -86,7 +103,7 @@ export class PlaylistService {
     const playlists = this.getPlaylists();
     const playlist = playlists.find((item) => item.id === playlistId);
 
-    if (!playlist) {
+    if (!playlist || playlist.locked) {
       return;
     }
 
@@ -114,6 +131,7 @@ export class PlaylistService {
           cover: toHighResArtworkUrl(song.cover),
         })),
         createdAt: new Date(playlist.createdAt),
+        locked: playlist.locked ?? false,
       }));
     } catch {
       localStorage.removeItem(STORAGE_KEY);
