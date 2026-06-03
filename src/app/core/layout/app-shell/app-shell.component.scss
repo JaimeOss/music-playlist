@@ -1,4 +1,6 @@
 .shell {
+  --app-sidebar-width: 4rem;
+
   display: flex;
   min-height: 100dvh;
   background-color: var(--app-bg);
@@ -95,6 +97,7 @@
 .shell__main {
   flex: 1;
   min-width: 0;
+  padding-bottom: var(--app-player-height);
 }
 
 .shell__toggle-item {

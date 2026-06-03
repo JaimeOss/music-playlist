@@ -3,9 +3,11 @@
 
 :root,
 [data-theme='dark'] {
-  /* Capas: sidebar 20, modales PrimeNG ~1100+, reproductor siempre encima */
+  /* Capas: sidebar 20, modales ~1100, reproductor 1300, menús/tooltips 1400 */
   --app-z-shell: 20;
   --app-z-player: 1300;
+  --app-z-overlay: 1400;
+  --app-player-height: 0px;
   color-scheme: dark;
   --app-primary: #2563eb;
   --app-primary-hover: #1d4ed8;
@@ -124,9 +126,63 @@ body {
   color: var(--app-text);
 }
 
-/* Reproductor global por encima de diálogos y máscaras modales */
+/* Reproductor por encima de diálogos; menús y tooltips por encima del reproductor */
 app-audio-player .player-shell {
   z-index: var(--app-z-player);
+}
+
+.p-menu.p-menu-overlay,
+.p-tooltip {
+  z-index: var(--app-z-overlay) !important;
+}
+
+@media (max-width: 639px) {
+  /* Detalle a pantalla completa encima del reproductor; scroll solo en el modal */
+  body.playlist-detail-modal-open {
+    overflow: hidden;
+  }
+
+  body.playlist-detail-modal-open .shell__body,
+  body.playlist-detail-modal-open .shell__main {
+    overflow: hidden;
+  }
+
+  body.playlist-detail-modal-open .playlist-detail-modal-mask.p-dialog-mask {
+    align-items: stretch !important;
+    justify-content: stretch !important;
+    box-sizing: border-box;
+    height: 100dvh !important;
+    width: 100vw !important;
+    padding-bottom: var(--app-player-height);
+  }
+
+  body.playlist-detail-modal-open .playlist-detail-modal.p-dialog {
+    display: flex !important;
+    flex: 1 1 auto;
+    flex-direction: column;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    margin: 0 !important;
+    transform: none !important;
+    border-radius: 0 !important;
+  }
+
+  body.playlist-detail-modal-open .playlist-detail-modal .p-dialog-header {
+    flex-shrink: 0;
+    border-radius: 0;
+  }
+
+  body.playlist-detail-modal-open .playlist-detail-modal .p-dialog-content,
+  body.playlist-detail-modal-open .playlist-detail-modal__content {
+    flex: 1;
+    min-height: 0;
+    max-height: none !important;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 .p-progressspinner-circle {

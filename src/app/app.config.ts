@@ -18,6 +18,12 @@ export const appConfig: ApplicationConfig = {
           darkModeSelector: '[data-theme="dark"]',
         },
       },
+      zIndex: {
+        modal: 1100,
+        overlay: 1000,
+        menu: 1400,
+        tooltip: 1400,
+      },
     })
   ]
 };

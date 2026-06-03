@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, model, output } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, input, model, output } from '@angular/core';
 import { Dialog } from 'primeng/dialog';
 import { PlaylistService } from '../../../core/services/playlist.service';
 import { PlaylistDetailPanelComponent } from '../playlist-detail-panel/playlist-detail-panel.component';
@@ -13,6 +13,7 @@ import { PlaylistDetailPanelComponent } from '../playlist-detail-panel/playlist-
 })
 export class PlaylistDetailModalComponent {
   private readonly playlistService = inject(PlaylistService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly visible = model(false);
   readonly playlistId = input<string | null>(null);
@@ -29,6 +30,16 @@ export class PlaylistDetailModalComponent {
 
     return this.playlistService.getPlaylistById(id)?.name ?? 'Detalle de playlist';
   });
+
+  constructor() {
+    effect(() => {
+      document.body.classList.toggle('playlist-detail-modal-open', this.visible());
+    });
+
+    this.destroyRef.onDestroy(() => {
+      document.body.classList.remove('playlist-detail-modal-open');
+    });
+  }
 
   onDialogHide(): void {
     this.visible.set(false);

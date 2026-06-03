@@ -2,9 +2,12 @@
   [header]="dialogHeader()"
   [(visible)]="visible"
   [modal]="true"
+  [blockScroll]="true"
   [draggable]="false"
   [style]="{ width: 'min(52rem, calc(100vw - 2rem))' }"
   styleClass="playlist-detail-modal"
+  maskStyleClass="playlist-detail-modal-mask"
+  contentStyleClass="playlist-detail-modal__content"
   (onHide)="onDialogHide()"
 >
   @if (playlistId(); as id) {

@@ -1,11 +1,15 @@
 import {
   ChangeDetectorRef,
   Component,
+  DestroyRef,
+  effect,
+  ElementRef,
   EventEmitter,
   inject,
   Input,
   OnDestroy,
   Output,
+  viewChild,
 } from '@angular/core';
 import { Button } from 'primeng/button';
 import {
@@ -24,6 +28,10 @@ const PREVIEW_MAX_SECONDS = 30;
   styleUrl: './audio-player.component.scss',
 })
 export class AudioPlayerComponent implements OnDestroy {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly shellRef = viewChild<ElementRef<HTMLElement>>('playerShell');
+  private playerHeightObserver: ResizeObserver | null = null;
+
   private _song: Song | null = null;
 
   @Input() set song(value: Song | null) {
@@ -74,6 +82,12 @@ export class AudioPlayerComponent implements OnDestroy {
   constructor() {
     this.loadVolume();
     this.setupVolumeControl();
+    this.syncPlayerHeightVariable();
+
+    this.destroyRef.onDestroy(() => {
+      this.disconnectPlayerHeightObserver();
+      document.documentElement.style.setProperty('--app-player-height', '0px');
+    });
   }
 
   ngOnDestroy(): void {
@@ -461,5 +475,33 @@ export class AudioPlayerComponent implements OnDestroy {
     const remainder = seconds % 60;
 
     return `${minutes}:${remainder.toString().padStart(2, '0')}`;
+  }
+
+  private syncPlayerHeightVariable(): void {
+    effect(() => {
+      this.disconnectPlayerHeightObserver();
+
+      const shell = this.shellRef()?.nativeElement;
+
+      if (!shell) {
+        return;
+      }
+
+      const updateHeight = (): void => {
+        document.documentElement.style.setProperty(
+          '--app-player-height',
+          `${shell.getBoundingClientRect().height}px`,
+        );
+      };
+
+      updateHeight();
+      this.playerHeightObserver = new ResizeObserver(updateHeight);
+      this.playerHeightObserver.observe(shell);
+    });
+  }
+
+  private disconnectPlayerHeightObserver(): void {
+    this.playerHeightObserver?.disconnect();
+    this.playerHeightObserver = null;
   }
 }

@@ -12,7 +12,7 @@
   status = 200
   force = true
 
-# SPA: permite refrescar rutas como /app/playlists, /app/search o /app/playlist/:id
+# SPA: permite refrescar rutas como /app/playlists, /app/search y ?playlist=id
 [[redirects]]
   from = "/*"
   to = "/index.html"

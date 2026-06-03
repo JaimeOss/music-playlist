@@ -1,18 +1,1 @@
-<div [class]="playback.hasActivePlayback() ? 'pb-40 lg:pb-28' : ''">
-  <router-outlet />
-</div>
-
-<app-audio-player
-  [song]="playback.currentSong()"
-  [playlistName]="playback.playlistName()"
-  [hasPrevious]="playback.hasPreviousSong()"
-  [hasNext]="playback.hasNextSong()"
-  [shuffleEnabled]="playback.isShuffleEnabled()"
-  [loopEnabled]="playback.isLoopEnabled()"
-  (playingChange)="playback.onPlayingChange($event)"
-  (previousClick)="playback.playPrevious()"
-  (nextClick)="playback.playNext()"
-  (previewEnded)="playback.onPreviewEnded()"
-  (shuffleToggle)="playback.toggleShuffle()"
-  (loopToggle)="playback.toggleLoop()"
-/>
+<router-outlet />

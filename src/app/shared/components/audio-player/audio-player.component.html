@@ -1,10 +1,21 @@
-@if (song) {
-  <div class="player-shell">
-    <div class="player-inner">
-      <div class="player-track">
+<div
+  #playerShell
+  class="player-shell"
+  [class.player-shell--idle]="!song"
+  [attr.aria-disabled]="!song ? true : null"
+>
+  <div class="player-inner">
+    <div class="player-track">
+      @if (song) {
         <img [src]="song.cover" [alt]="song.title" class="player-track__cover" />
+      } @else {
+        <div class="player-track__cover player-track__cover--placeholder" aria-hidden="true">
+          <i class="pi pi-headphones"></i>
+        </div>
+      }
 
-        <div class="player-track__meta">
+      <div class="player-track__meta">
+        @if (song) {
           <div class="player-track__title-row">
             <p class="player-track__title">{{ song.title }}</p>
             <span class="player-track__badge">Preview · 30s</span>
@@ -16,112 +27,120 @@
               <i class="pi pi-list player-track__playlist-icon"></i>{{ playlistName }}
             </p>
           }
+        } @else {
+          <p class="player-track__title">Ninguna canción seleccionada</p>
+          <p class="player-track__artist">Elige una canción para reproducir</p>
+        }
 
-          <div class="player-progress player-progress--desktop">
-            <span class="player-progress__time">{{ currentTimeLabel }}</span>
-            <div class="player-progress__track">
-              <div class="player-progress__fill" [style.width.%]="progressPercent"></div>
-            </div>
-            <span class="player-progress__time player-progress__time--end">0:30</span>
+        <div class="player-progress player-progress--desktop">
+          <span class="player-progress__time">{{ currentTimeLabel }}</span>
+          <div class="player-progress__track">
+            <div class="player-progress__fill" [style.width.%]="progressPercent"></div>
           </div>
+          <span class="player-progress__time player-progress__time--end">0:30</span>
         </div>
       </div>
+    </div>
 
-      <div class="player-progress player-progress--mobile">
-        <span class="player-progress__time">{{ currentTimeLabel }}</span>
-        <div class="player-progress__track">
-          <div class="player-progress__fill" [style.width.%]="progressPercent"></div>
-        </div>
-        <span class="player-progress__time player-progress__time--end">0:30</span>
+    <div class="player-progress player-progress--mobile">
+      <span class="player-progress__time">{{ currentTimeLabel }}</span>
+      <div class="player-progress__track">
+        <div class="player-progress__fill" [style.width.%]="progressPercent"></div>
       </div>
+      <span class="player-progress__time player-progress__time--end">0:30</span>
+    </div>
 
-      <div class="player-controls">
-        <div class="player-controls__left">
-          <button
-            type="button"
-            class="player-mode-btn"
-            [class.player-mode-btn--active]="shuffleEnabled"
-            [attr.aria-pressed]="shuffleEnabled"
-            aria-label="Reproducción aleatoria"
-            (click)="onShuffleToggle()"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M10.59 9.17 5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"
-              />
-            </svg>
-          </button>
-          <button
-            type="button"
-            class="player-mode-btn"
-            [class.player-mode-btn--active]="loopEnabled"
-            [attr.aria-pressed]="loopEnabled"
-            aria-label="Repetir playlist"
-            (click)="onLoopToggle()"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"
-              />
-            </svg>
-          </button>
-          <button
-            type="button"
-            class="player-nav-btn"
-            [disabled]="!hasPrevious"
-            aria-label="Canción anterior"
-            (click)="previous()"
-          >
-            <i class="pi pi-step-backward" aria-hidden="true"></i>
-          </button>
-        </div>
-
-        <div class="player-controls__center">
-          <p-button
-            type="button"
-            [icon]="playIcon"
-            [rounded]="true"
-            styleClass="player-btn"
-            ariaLabel="Play o pausa"
-            (onClick)="toggle()"
-          />
-        </div>
-
-        <div class="player-controls__right">
-          <button
-            type="button"
-            class="player-nav-btn"
-            [disabled]="!hasNext"
-            aria-label="Canción siguiente"
-            (click)="next()"
-          >
-            <i class="pi pi-step-forward" aria-hidden="true"></i>
-          </button>
-
-          <div class="volume-control">
-            <button
-              type="button"
-              class="volume-btn"
-              [attr.aria-label]="volumeAriaLabel"
-              (click)="toggleMute()"
-            >
-              <i [class]="volumeIcon"></i>
-            </button>
-            <input
-              type="range"
-              class="volume-slider volume-slider--horizontal"
-              min="0"
-              max="100"
-              step="1"
-              [value]="volumePercent"
-              [style.--volume-percent]="volumePercent + '%'"
-              aria-label="Volumen"
-              (input)="onVolumeChange($event)"
-              (change)="onVolumeChange($event)"
+    <div class="player-controls">
+      <div class="player-controls__left">
+        <button
+          type="button"
+          class="player-mode-btn"
+          [class.player-mode-btn--active]="shuffleEnabled"
+          [attr.aria-pressed]="shuffleEnabled"
+          aria-label="Reproducción aleatoria"
+          [disabled]="!song"
+          (click)="onShuffleToggle()"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M10.59 9.17 5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"
             />
-          </div>
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="player-mode-btn"
+          [class.player-mode-btn--active]="loopEnabled"
+          [attr.aria-pressed]="loopEnabled"
+          aria-label="Repetir playlist"
+          [disabled]="!song"
+          (click)="onLoopToggle()"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"
+            />
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="player-nav-btn"
+          [disabled]="!song || !hasPrevious"
+          aria-label="Canción anterior"
+          (click)="previous()"
+        >
+          <i class="pi pi-step-backward" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="player-controls__center">
+        <p-button
+          type="button"
+          [icon]="playIcon"
+          [rounded]="true"
+          styleClass="player-btn"
+          ariaLabel="Play o pausa"
+          [disabled]="!song"
+          (onClick)="toggle()"
+        />
+      </div>
+
+      <div class="player-controls__right">
+        <button
+          type="button"
+          class="player-nav-btn"
+          [disabled]="!song || !hasNext"
+          aria-label="Canción siguiente"
+          (click)="next()"
+        >
+          <i class="pi pi-step-forward" aria-hidden="true"></i>
+        </button>
+
+        <div class="volume-control">
+          <button
+            type="button"
+            class="volume-btn"
+            [attr.aria-label]="volumeAriaLabel"
+            [disabled]="!song"
+            (click)="toggleMute()"
+          >
+            <i [class]="volumeIcon"></i>
+          </button>
+          <input
+            type="range"
+            class="volume-slider volume-slider--horizontal"
+            min="0"
+            max="100"
+            step="1"
+            [value]="volumePercent"
+            [style.--volume-percent]="volumePercent + '%'"
+            aria-label="Volumen"
+            [disabled]="!song"
+            (input)="onVolumeChange($event)"
+            (change)="onVolumeChange($event)"
+          />
         </div>
       </div>
     </div>
   </div>
-}
+</div>

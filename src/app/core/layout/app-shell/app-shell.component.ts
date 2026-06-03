@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, inject, OnDestroy, ViewChild } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { Avatar } from 'primeng/avatar';
@@ -11,6 +11,7 @@ import { AuthService } from '../../services/auth.service';
 import { PlaybackService } from '../../services/playback.service';
 import { SearchSettingsService } from '../../services/search-settings.service';
 import { ThemeService } from '../../services/theme.service';
+import { AudioPlayerComponent } from '../../../shared/components/audio-player/audio-player.component';
 
 interface ShellNavItem {
   label: string;
@@ -30,20 +31,32 @@ interface ShellNavItem {
     Menu,
     Ripple,
     Tooltip,
+    AudioPlayerComponent,
   ],
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss',
 })
-export class AppShellComponent {
+export class AppShellComponent implements AfterViewInit, OnDestroy {
   @ViewChild('settingsMenu') settingsMenu!: Menu;
+  @ViewChild(AudioPlayerComponent) private audioPlayer?: AudioPlayerComponent;
 
   private readonly authService = inject(AuthService);
-  private readonly playback = inject(PlaybackService);
+  readonly playback = inject(PlaybackService);
   private readonly router = inject(Router);
   readonly themeService = inject(ThemeService);
   readonly searchSettings = inject(SearchSettingsService);
 
   readonly routes = APP_ROUTES;
+
+  ngAfterViewInit(): void {
+    if (this.audioPlayer) {
+      this.playback.attachPlayer(this.audioPlayer);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.playback.detachPlayer();
+  }
 
   readonly navItems: ShellNavItem[] = [
     {
