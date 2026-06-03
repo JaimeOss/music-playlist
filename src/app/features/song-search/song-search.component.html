@@ -1,6 +1,104 @@
 <div class="song-search">
-  <h1 class="song-search__title">Buscador de canciones</h1>
-  <p class="song-search__hint">
-    La búsqueda global y el listado de resultados se implementarán en la siguiente fase del plan.
-  </p>
+  <h1 class="song-search__page-title">Buscador de canciones</h1>
+
+  <div class="song-search__search-bar">
+    <input
+      pInputText
+      [formControl]="searchControl"
+      [placeholder]="searchPlaceholder"
+      class="song-search__input w-full"
+      aria-label="Buscar canciones"
+    />
+  </div>
+
+  @if (searchSourceHint; as hint) {
+    <p class="song-search__source-hint">{{ hint }}</p>
+  }
+
+  @if (addSuccessMessage; as message) {
+    <p class="song-search__success" role="status">{{ message }}</p>
+  }
+
+  @if (isSearching) {
+    <div class="song-search__loading">
+      <p-progressSpinner strokeWidth="4" styleClass="h-8 w-8" />
+    </div>
+  }
+
+  @if (searchError) {
+    <p class="song-search__error">
+      No se pudo buscar canciones. Comprueba tu conexión e inténtalo de nuevo.
+    </p>
+  }
+
+  @if (!isSearching && showSearchEmpty && searchResults.length === 0 && !searchError) {
+    <p class="song-search__empty">No se encontraron resultados.</p>
+  }
+
+  <ul class="song-search__results" aria-label="Resultados de búsqueda">
+    @for (result of searchResults; track result.id) {
+      <li class="song-search__result">
+        <img [src]="result.cover" [alt]="result.title" class="song-search__result-cover" />
+
+        <div class="song-search__result-info">
+          <p class="song-search__result-title">{{ result.title }}</p>
+          <p class="song-search__result-artist">{{ result.artist }}</p>
+          <p class="song-search__result-duration">{{ formatDuration(result.duration) }}</p>
+        </div>
+
+        <p-button
+          type="button"
+          icon="pi pi-plus"
+          [rounded]="true"
+          styleClass="song-search__add-btn"
+          [attr.aria-label]="'Agregar ' + result.title + ' a una lista'"
+          (onClick)="openPlaylistPicker(result)"
+        />
+      </li>
+    }
+  </ul>
 </div>
+
+<p-dialog
+  header="Agregar a lista de reproducción"
+  [(visible)]="pickerDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [style]="{ width: 'min(24rem, calc(100vw - 2rem))' }"
+  styleClass="song-search-picker-dialog"
+  (onHide)="songToAdd = null"
+>
+  <div class="song-search-picker">
+    @if (!hasEditablePlaylists) {
+      <p class="song-search-picker__empty">
+        No hay listas editables. Crea una nueva lista o desbloquea una existente.
+      </p>
+    } @else if (songToAdd; as song) {
+      <p class="song-search-picker__intro">
+        Elige dónde agregar <span class="song-search-picker__song">{{ song.title }}</span>
+      </p>
+
+      <ul class="song-search-picker__list">
+        @for (playlist of editablePlaylists; track playlist.id) {
+          <li>
+            <button
+              type="button"
+              class="song-search-picker__option"
+              [class.song-search-picker__option--disabled]="isSongInPlaylist(playlist.id, song.id)"
+              [disabled]="isSongInPlaylist(playlist.id, song.id)"
+              (click)="confirmAddToPlaylist(playlist.id)"
+            >
+              <span class="song-search-picker__option-cover">
+                <app-playlist-cover [songs]="playlist.songs" [alt]="playlist.name" />
+              </span>
+              <span class="song-search-picker__option-name">{{ playlist.name }}</span>
+              @if (isSongInPlaylist(playlist.id, song.id)) {
+                <span class="song-search-picker__option-badge">Ya está en la lista</span>
+              }
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</p-dialog>
